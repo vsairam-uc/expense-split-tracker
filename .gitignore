@@ -30,11 +30,17 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files
+# env files — never commit real secrets
 .env
-.env.local
-.env.*.local
+.env.*
 !.env.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# local tooling
+.podman-xdg
 
 # vercel
 .vercel

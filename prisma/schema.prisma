@@ -1,0 +1,142 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+enum SplitType {
+  EQUAL
+  EXACT
+}
+
+enum ExpenseCategory {
+  GENERAL
+  FOOD
+  TRANSPORT
+  ENTERTAINMENT
+  UTILITIES
+  SHOPPING
+  TRAVEL
+  OTHER
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sentFriendRequests     Friendship[]  @relation("FriendshipRequester")
+  receivedFriendRequests Friendship[]  @relation("FriendshipAddressee")
+  createdGroups          Group[]       @relation("GroupCreator")
+  groupMemberships       GroupMember[]
+  paidExpenses           Expense[]     @relation("ExpensePayer")
+  expenseSplits          ExpenseSplit[]
+  settlementsFrom        Settlement[]  @relation("SettlementFrom")
+  settlementsTo          Settlement[]  @relation("SettlementTo")
+}
+
+model Friendship {
+  id          String           @id @default(cuid())
+  requesterId String
+  addresseeId String
+  status      FriendshipStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  requester User @relation("FriendshipRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  addressee User @relation("FriendshipAddressee", fields: [addresseeId], references: [id], onDelete: Cascade)
+
+  @@unique([requesterId, addresseeId])
+  @@index([addresseeId, status])
+}
+
+model Group {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  createdById String
+  isPersonal  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  createdBy   User          @relation("GroupCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  members     GroupMember[]
+  expenses    Expense[]
+  settlements Settlement[]
+}
+
+model GroupMember {
+  id       String   @id @default(cuid())
+  groupId  String
+  userId   String
+  joinedAt DateTime @default(now())
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@index([userId])
+}
+
+model Expense {
+  id          String          @id @default(cuid())
+  groupId     String
+  paidById    String
+  amount      Decimal         @db.Decimal(12, 2)
+  currency    String          @default("USD")
+  description String
+  category    ExpenseCategory @default(GENERAL)
+  notes       String?
+  expenseDate DateTime        @default(now())
+  splitType   SplitType
+  deletedAt   DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  group   Group          @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  paidBy  User           @relation("ExpensePayer", fields: [paidById], references: [id], onDelete: Cascade)
+  splits  ExpenseSplit[]
+
+  @@index([groupId, expenseDate])
+}
+
+model ExpenseSplit {
+  id        String  @id @default(cuid())
+  expenseId String
+  userId    String
+  amount    Decimal @db.Decimal(12, 2)
+
+  expense Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([expenseId, userId])
+}
+
+model Settlement {
+  id         String   @id @default(cuid())
+  groupId    String
+  fromUserId String
+  toUserId   String
+  amount     Decimal  @db.Decimal(12, 2)
+  note       String?
+  settledAt  DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  group    Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  fromUser User  @relation("SettlementFrom", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser   User  @relation("SettlementTo", fields: [toUserId], references: [id], onDelete: Cascade)
+
+  @@index([groupId, settledAt])
+}

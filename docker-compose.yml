@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: split-expense-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: splitexpense
+      POSTGRES_PASSWORD: splitexpense
+      POSTGRES_DB: split_expense_tracker
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

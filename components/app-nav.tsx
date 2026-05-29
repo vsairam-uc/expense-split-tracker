@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { logoutAction } from "@/lib/actions/auth";
 
 const navItems = [
-  { href: "/dashboard", label: "Home", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/friends", label: "Friends", icon: Users },
   { href: "/groups", label: "Groups", icon: UsersRound },
   { href: "/profile", label: "Profile", icon: UserCircle },
@@ -28,7 +28,7 @@ export function AppNav({ userName }: { userName: string }) {
       <header className="sticky top-0 z-40 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-3 py-3 sm:gap-4 sm:px-4">
           <Link
-            href="/dashboard"
+            href="/"
             className="truncate text-base font-semibold sm:text-lg"
           >
             SplitExpense

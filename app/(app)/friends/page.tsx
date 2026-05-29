@@ -1,3 +1,6 @@
+import Link from "next/link";
+import { Receipt } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -80,11 +83,28 @@ export default async function FriendsPage() {
         ) : (
           <ul className="divide-y rounded-lg border">
             {friends.map((friend) => (
-              <li key={friend.id} className="p-4">
-                <p className="font-medium">{friend.name}</p>
-                <p className="truncate text-sm text-muted-foreground">
-                  {friend.email}
-                </p>
+              <li
+                key={friend.id}
+                className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div className="min-w-0">
+                  <p className="font-medium">{friend.name}</p>
+                  <p className="truncate text-sm text-muted-foreground">
+                    {friend.email}
+                  </p>
+                </div>
+                <Button
+                  nativeButton={false}
+                  variant="outline"
+                  size="sm"
+                  className="w-full shrink-0 sm:w-auto"
+                  render={
+                    <Link href={`/expenses/new?with=${friend.id}`} />
+                  }
+                >
+                  <Receipt className="size-4" />
+                  Split expense
+                </Button>
               </li>
             ))}
           </ul>

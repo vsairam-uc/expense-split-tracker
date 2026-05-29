@@ -44,7 +44,7 @@ export default async function DashboardPage() {
       >
         <Button
           nativeButton={false}
-          render={<Link href="/groups" />}
+          render={<Link href="/expenses/new" />}
           className="w-full sm:w-auto"
         >
           <Plus className="size-4" />

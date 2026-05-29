@@ -37,5 +37,8 @@ export const settlementSchema = z.object({
   note: z.string().optional(),
 });
 
+export const friendExpenseSchema = expenseSchema.omit({ groupId: true });
+
 export type ExpenseInput = z.infer<typeof expenseSchema>;
+export type FriendExpenseInput = z.infer<typeof friendExpenseSchema>;
 export type SettlementInput = z.infer<typeof settlementSchema>;

@@ -7,8 +7,9 @@ import {
   equalSplit,
   validateExactSplits,
 } from "@/lib/balances";
-import { expenseSchema, settlementSchema } from "@/lib/validations/expense";
-import { decimalToNumber, requireGroupMember, requireUser } from "@/lib/session";
+import { expenseSchema, friendExpenseSchema, settlementSchema } from "@/lib/validations/expense";
+import { findOrCreateGroupForParticipants } from "@/lib/find-or-create-group";
+import { decimalToNumber, getAcceptedFriendIds, requireGroupMember, requireUser } from "@/lib/session";
 import type { ActionState } from "@/lib/actions/auth";
 
 function parseExactSplits(formData: FormData, participantIds: string[]) {
@@ -92,6 +93,108 @@ export async function createExpenseAction(
     },
   });
 
+  revalidatePath(`/groups/${groupId}`);
+  redirect(`/expenses/${expense.id}`);
+}
+
+export async function createFriendExpenseAction(
+  _prevState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const user = await requireUser();
+  const participantIds = formData.getAll("participantIds") as string[];
+  const splitType = formData.get("splitType") as "EQUAL" | "EXACT";
+
+  const parsed = friendExpenseSchema.safeParse({
+    description: formData.get("description"),
+    amount: formData.get("amount"),
+    expenseDate: formData.get("expenseDate"),
+    paidById: formData.get("paidById"),
+    category: formData.get("category"),
+    notes: formData.get("notes") || undefined,
+    splitType,
+    participantIds,
+    exactSplits:
+      splitType === "EXACT" ? parseExactSplits(formData, participantIds) : undefined,
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  const friendIds = await getAcceptedFriendIds(user.id);
+  const allowedIds = new Set([user.id, ...friendIds]);
+  const { paidById, amount, splitType: type } = parsed.data;
+
+  for (const id of [...parsed.data.participantIds, paidById]) {
+    if (!allowedIds.has(id)) {
+      return { error: "All participants must be you or your friends" };
+    }
+  }
+
+  const involvedIds = new Set([...parsed.data.participantIds, paidById]);
+  const friendCount = [...involvedIds].filter((id) => id !== user.id).length;
+  if (friendCount === 0) {
+    return { error: "Select at least one friend to split with" };
+  }
+
+  if (!involvedIds.has(user.id)) {
+    return { error: "You must be a participant or the payer" };
+  }
+
+  const groupId = await findOrCreateGroupForParticipants(
+    user.id,
+    parsed.data.participantIds,
+    paidById,
+  );
+
+  const group = await db.group.findUnique({
+    where: { id: groupId },
+    include: { members: true },
+  });
+  if (!group) return { error: "Could not resolve expense group" };
+
+  const memberIds = new Set(group.members.map((m) => m.userId));
+  for (const pid of parsed.data.participantIds) {
+    if (!memberIds.has(pid)) {
+      return { error: "Invalid participant" };
+    }
+  }
+  if (!memberIds.has(paidById)) {
+    return { error: "Payer must be included in the expense" };
+  }
+
+  let splits: { userId: string; amount: number }[];
+  if (type === "EQUAL") {
+    splits = equalSplit(amount, parsed.data.participantIds, paidById);
+  } else {
+    splits = parsed.data.exactSplits ?? [];
+    if (!validateExactSplits(amount, splits)) {
+      return { error: "Split amounts must sum to the expense total" };
+    }
+  }
+
+  const expense = await db.expense.create({
+    data: {
+      groupId,
+      paidById,
+      amount,
+      description: parsed.data.description,
+      category: parsed.data.category,
+      notes: parsed.data.notes,
+      expenseDate: parsed.data.expenseDate,
+      splitType: type,
+      splits: {
+        create: splits.map((s) => ({
+          userId: s.userId,
+          amount: s.amount,
+        })),
+      },
+    },
+  });
+
+  revalidatePath("/dashboard");
+  revalidatePath("/groups");
   revalidatePath(`/groups/${groupId}`);
   redirect(`/expenses/${expense.id}`);
 }

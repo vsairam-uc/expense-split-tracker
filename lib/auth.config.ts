@@ -7,9 +7,14 @@ export const authConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
+      const pathname = nextUrl.pathname;
       const isAuthPage =
-        nextUrl.pathname.startsWith("/login") ||
-        nextUrl.pathname.startsWith("/register");
+        pathname.startsWith("/login") || pathname.startsWith("/register");
+      const isLandingPage = pathname === "/";
+
+      if (isLandingPage) {
+        return true;
+      }
 
       if (isAuthPage) {
         if (isLoggedIn) {

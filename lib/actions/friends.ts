@@ -108,37 +108,14 @@ export async function respondFriendRequestAction(
   });
 
   if (accept) {
-    const existingPersonal = await db.group.findFirst({
-      where: {
-        isPersonal: true,
-        AND: [
-          { members: { some: { userId: user.id } } },
-          { members: { some: { userId: friendship.requesterId } } },
-        ],
-      },
-    });
-
-    if (!existingPersonal) {
-      const requester = await db.user.findUnique({
-        where: { id: friendship.requesterId },
-      });
-      const currentUser = await db.user.findUnique({ where: { id: user.id } });
-      if (requester && currentUser) {
-        await db.group.create({
-          data: {
-            name: `${currentUser.name} & ${requester.name}`,
-            isPersonal: true,
-            createdById: user.id,
-            members: {
-              create: [
-                { userId: user.id },
-                { userId: friendship.requesterId },
-              ],
-            },
-          },
-        });
-      }
-    }
+    const { findOrCreateGroupForParticipants } = await import(
+      "@/lib/find-or-create-group"
+    );
+    await findOrCreateGroupForParticipants(
+      user.id,
+      [user.id, friendship.requesterId],
+      user.id,
+    );
   }
 
   revalidatePath("/friends");

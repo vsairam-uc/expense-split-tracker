@@ -31,7 +31,7 @@ const categories = [
 ] as const;
 
 type ExpenseFormProps = {
-  groupId: string;
+  groupId?: string;
   members: Member[];
   currentUserId: string;
   action: (
@@ -107,7 +107,7 @@ export function ExpenseForm({
 
   return (
     <form action={formAction} className="space-y-6">
-      <input type="hidden" name="groupId" value={groupId} />
+      {groupId && <input type="hidden" name="groupId" value={groupId} />}
       <input type="hidden" name="splitType" value={splitType} />
       <input type="hidden" name="paidById" value={paidById} />
       <input type="hidden" name="category" value={category} />

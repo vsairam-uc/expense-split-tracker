@@ -1,7 +1,8 @@
-import { redirect } from "next/navigation";
+import { LandingPage } from "@/components/landing-page";
 import { auth } from "@/lib/auth";
 
 export default async function HomePage() {
   const session = await auth();
-  redirect(session?.user ? "/dashboard" : "/login");
+
+  return <LandingPage isAuthenticated={!!session?.user} />;
 }

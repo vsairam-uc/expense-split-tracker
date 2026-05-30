@@ -11,6 +11,7 @@ export const config = {
     "/groups/:path*",
     "/expenses/:path*",
     "/profile/:path*",
+    "/admin/:path*",
     "/login",
     "/register",
   ],

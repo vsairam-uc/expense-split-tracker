@@ -13,6 +13,19 @@ export async function requireUser() {
   return user;
 }
 
+export async function isAdmin() {
+  const user = await getCurrentUser();
+  return user?.role === "ADMIN";
+}
+
+export async function requireAdmin() {
+  const user = await requireUser();
+  if (user.role !== "ADMIN") {
+    throw new Error("Forbidden");
+  }
+  return user;
+}
+
 export async function isGroupMember(groupId: string, userId: string) {
   const { db } = await import("@/lib/db");
   const membership = await db.groupMember.findUnique({

@@ -8,20 +8,30 @@ import {
   UsersRound,
   UserCircle,
   LogOut,
+  Shield,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { logoutAction } from "@/lib/actions/auth";
 
-const navItems = [
+const baseNavItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/friends", label: "Friends", icon: Users },
   { href: "/groups", label: "Groups", icon: UsersRound },
   { href: "/profile", label: "Profile", icon: UserCircle },
 ];
 
-export function AppNav({ userName }: { userName: string }) {
+export function AppNav({
+  userName,
+  isAdmin = false,
+}: {
+  userName: string;
+  isAdmin?: boolean;
+}) {
   const pathname = usePathname();
+  const navItems = isAdmin
+    ? [...baseNavItems, { href: "/admin", label: "Admin", icon: Shield }]
+    : baseNavItems;
 
   return (
     <>

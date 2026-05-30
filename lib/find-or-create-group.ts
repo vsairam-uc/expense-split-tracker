@@ -15,6 +15,7 @@ export async function findOrCreateGroupForParticipants(
 
   const candidates = await db.group.findMany({
     where: {
+      deletedAt: null,
       AND: [
         ...memberIds.map((id) => ({
           members: { some: { userId: id } },

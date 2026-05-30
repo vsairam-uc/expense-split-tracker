@@ -14,7 +14,7 @@ export default async function AppLayout({
 
   return (
     <>
-      <AppNav userName={session.user.name} />
+      <AppNav userName={session.user.name} isAdmin={session.user.role === "ADMIN"} />
       <main className="mx-auto w-full max-w-6xl flex-1 px-3 py-4 pb-24 sm:px-4 sm:py-6 md:pb-6">
         {children}
       </main>

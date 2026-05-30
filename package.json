@@ -12,7 +12,8 @@
     "postinstall": "prisma generate",
     "db:up": "bash scripts/db-up.sh",
     "db:down": "bash scripts/db-down.sh",
-    "db:migrate": "prisma migrate deploy"
+    "db:migrate": "prisma migrate deploy",
+    "make-admin": "tsx scripts/make-admin.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
@@ -46,6 +47,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
+    "tsx": "^4.22.3",
     "typescript": "^5",
     "vitest": "^4.1.7"
   }

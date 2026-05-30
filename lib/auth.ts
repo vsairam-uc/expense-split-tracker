@@ -24,7 +24,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           where: { email: parsed.data.email.toLowerCase() },
         });
 
-        if (!user) {
+        if (!user || user.deletedAt) {
           return null;
         }
 
@@ -41,6 +41,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           id: user.id,
           email: user.email,
           name: user.name,
+          role: user.role,
         };
       },
     }),

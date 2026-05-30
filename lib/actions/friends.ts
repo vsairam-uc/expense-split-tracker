@@ -13,6 +13,7 @@ export async function searchUsersAction(query: string) {
     where: {
       AND: [
         { id: { not: user.id } },
+        { deletedAt: null },
         {
           OR: [
             { email: { contains: query, mode: "insensitive" } },

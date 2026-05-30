@@ -18,11 +18,11 @@ export async function getGroupBalanceData(groupId: string) {
         where: { deletedAt: null },
         include: { splits: true },
       },
-      settlements: true,
+      settlements: { where: { deletedAt: null } },
     },
   });
 
-  if (!group) return null;
+  if (!group || group.deletedAt) return null;
 
   const userIds = group.members.map((m) => m.userId);
   const expenses: ExpenseRecord[] = group.expenses.map((e) => ({
@@ -53,7 +53,7 @@ export async function getGroupBalanceData(groupId: string) {
 
 export async function getUserDashboardBalances(userId: string) {
   const memberships = await db.groupMember.findMany({
-    where: { userId },
+    where: { userId, group: { deletedAt: null } },
     include: {
       group: {
         include: {
@@ -62,7 +62,7 @@ export async function getUserDashboardBalances(userId: string) {
             where: { deletedAt: null },
             include: { splits: true },
           },
-          settlements: true,
+          settlements: { where: { deletedAt: null } },
         },
       },
     },

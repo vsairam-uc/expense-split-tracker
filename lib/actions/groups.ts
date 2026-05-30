@@ -139,7 +139,7 @@ export async function getGroupsData() {
   const user = await requireUser();
 
   const memberships = await db.groupMember.findMany({
-    where: { userId: user.id },
+    where: { userId: user.id, group: { deletedAt: null } },
     include: {
       group: {
         include: {
@@ -177,6 +177,7 @@ export async function getGroupDetail(groupId: string) {
         orderBy: { expenseDate: "desc" },
       },
       settlements: {
+        where: { deletedAt: null },
         include: {
           fromUser: { select: { id: true, name: true } },
           toUser: { select: { id: true, name: true } },
@@ -186,5 +187,6 @@ export async function getGroupDetail(groupId: string) {
     },
   });
 
+  if (group?.deletedAt) return null;
   return group;
 }

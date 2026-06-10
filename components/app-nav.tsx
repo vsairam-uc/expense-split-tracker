@@ -13,6 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { logoutAction } from "@/lib/actions/auth";
 
 const baseNavItems = [
@@ -74,6 +75,7 @@ export function AppNav({
             <span className="hidden max-w-[140px] truncate text-sm text-muted-foreground lg:inline">
               {userName}
             </span>
+            <ThemeToggle className="text-muted-foreground" />
             <form action={logoutAction}>
               <Button
                 type="submit"

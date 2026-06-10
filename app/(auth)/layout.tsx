@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function AuthLayout({
   children,
@@ -20,12 +21,15 @@ export default function AuthLayout({
           <Logo className="size-6" />
           Vasool
         </Link>
-        <Link
-          href="/"
-          className="font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground transition-colors hover:text-foreground"
-        >
-          ← Home
-        </Link>
+        <div className="flex items-center gap-3">
+          <ThemeToggle className="text-muted-foreground" />
+          <Link
+            href="/"
+            className="font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground transition-colors hover:text-foreground"
+          >
+            ← Home
+          </Link>
+        </div>
       </div>
       <div className="relative flex flex-1 items-center justify-center px-5 py-12 pb-16 sm:py-16">
         {children}

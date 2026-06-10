@@ -4,6 +4,7 @@ import Link from "next/link";
 import { LayoutDashboard, UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const sectionLinks = [
   { href: "#features", label: "Features" },
@@ -43,6 +44,7 @@ export function LandingNav({
           </nav>
 
           <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+            <ThemeToggle className="text-muted-foreground" />
             {isAuthenticated ? (
               <>
                 <Button

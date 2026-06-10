@@ -44,8 +44,9 @@ export default async function GroupDetailPage({
     .map((f) => ({ id: f.id, name: f.name }));
 
   return (
-    <div className="space-y-6 sm:space-y-8">
+    <div className="space-y-10">
       <PageHeader
+        eyebrow="Group"
         title={group.name}
         description={group.description ?? undefined}
       >
@@ -95,7 +96,7 @@ export default async function GroupDetailPage({
                         {memberMap.get(debt.toUserId)}
                       </span>
                     </span>
-                    <span className="shrink-0 font-medium">
+                    <span className="tabular shrink-0 font-mono font-medium">
                       {formatCurrency(debt.amount)}
                     </span>
                   </li>
@@ -133,7 +134,16 @@ export default async function GroupDetailPage({
                         <span className="ml-1 text-muted-foreground">(you)</span>
                       )}
                     </span>
-                    <Badge variant="secondary" className="w-fit">
+                    <Badge
+                      className="w-fit font-mono"
+                      variant={
+                        balance > 0.01
+                          ? "positive"
+                          : balance < -0.01
+                            ? "negative"
+                            : "secondary"
+                      }
+                    >
                       {balance > 0.01
                         ? `+${formatCurrency(balance)}`
                         : balance < -0.01
@@ -148,37 +158,38 @@ export default async function GroupDetailPage({
         </Card>
       </div>
 
-      <section className="space-y-3 sm:space-y-4">
-        <h2 className="text-base font-semibold sm:text-lg">Expenses</h2>
+      <section className="space-y-4">
+        <h2 className="font-heading text-xl font-medium tracking-tight">
+          Expenses
+        </h2>
         {group.expenses.length === 0 ? (
-          <Card>
-            <CardContent className="py-8 text-center text-muted-foreground">
-              No expenses yet
-            </CardContent>
-          </Card>
+          <div className="rounded-lg border border-dashed border-border py-12 text-center text-sm text-muted-foreground">
+            No expenses yet.
+          </div>
         ) : (
-          <ul className="divide-y rounded-lg border">
+          <ul className="overflow-hidden rounded-lg border border-border">
             {group.expenses.map((expense) => (
-              <li key={expense.id}>
+              <li
+                key={expense.id}
+                className="border-b border-border last:border-0"
+              >
                 <Link
                   href={`/expenses/${expense.id}`}
-                  className="flex flex-col gap-2 p-4 hover:bg-muted/50 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-muted/40"
                 >
                   <div className="min-w-0">
                     <p className="truncate font-medium">{expense.description}</p>
-                    <p className="text-xs text-muted-foreground sm:text-sm">
+                    <p className="mt-0.5 text-xs text-muted-foreground">
                       {format(expense.expenseDate, "MMM d, yyyy")} ·{" "}
-                      {expense.paidBy.name}
+                      {expense.paidBy.name} ·{" "}
+                      <span className="uppercase tracking-wide">
+                        {expense.splitType.toLowerCase()}
+                      </span>
                     </p>
                   </div>
-                  <div className="flex items-center justify-between gap-2 sm:flex-col sm:items-end">
-                    <p className="font-medium">
-                      {formatCurrency(decimalToNumber(expense.amount))}
-                    </p>
-                    <Badge variant="secondary" className="text-xs">
-                      {expense.splitType.toLowerCase()}
-                    </Badge>
-                  </div>
+                  <p className="tabular shrink-0 font-mono text-sm font-medium">
+                    {formatCurrency(decimalToNumber(expense.amount))}
+                  </p>
                 </Link>
               </li>
             ))}
@@ -187,21 +198,29 @@ export default async function GroupDetailPage({
       </section>
 
       {group.settlements.length > 0 && (
-        <section className="space-y-3 sm:space-y-4">
-          <h2 className="text-base font-semibold sm:text-lg">Settlements</h2>
-          <ul className="divide-y rounded-lg border">
+        <section className="space-y-4">
+          <h2 className="font-heading text-xl font-medium tracking-tight">
+            Settlements
+          </h2>
+          <ul className="overflow-hidden rounded-lg border border-border">
             {group.settlements.map((s) => (
-              <li key={s.id} className="p-4 text-sm">
-                <p>
-                  <span className="font-medium">{s.fromUser.name}</span> paid{" "}
-                  <span className="font-medium">{s.toUser.name}</span>{" "}
-                  <span className="font-medium">
-                    {formatCurrency(decimalToNumber(s.amount))}
-                  </span>
-                </p>
-                <p className="text-muted-foreground">
-                  {format(s.settledAt, "MMM d, yyyy")}
-                </p>
+              <li
+                key={s.id}
+                className="flex items-center justify-between gap-4 border-b border-border px-5 py-4 text-sm last:border-0"
+              >
+                <div className="min-w-0">
+                  <p className="truncate">
+                    <span className="font-medium">{s.fromUser.name}</span>{" "}
+                    <span className="text-muted-foreground">paid</span>{" "}
+                    <span className="font-medium">{s.toUser.name}</span>
+                  </p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    {format(s.settledAt, "MMM d, yyyy")}
+                  </p>
+                </div>
+                <span className="tabular shrink-0 font-mono font-medium">
+                  {formatCurrency(decimalToNumber(s.amount))}
+                </span>
               </li>
             ))}
           </ul>

@@ -11,69 +11,50 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LandingNav } from "@/components/landing-nav";
-import { cn } from "@/lib/utils";
-
-const featureStyles = {
-  teal: { icon: "text-teal-600", bg: "bg-teal-100" },
-  violet: { icon: "text-violet-600", bg: "bg-violet-100" },
-  amber: { icon: "text-amber-600", bg: "bg-amber-100" },
-  rose: { icon: "text-rose-600", bg: "bg-rose-100" },
-  sky: { icon: "text-sky-600", bg: "bg-sky-100" },
-  emerald: { icon: "text-emerald-600", bg: "bg-emerald-100" },
-} as const;
 
 const features: {
   icon: LucideIcon;
   title: string;
   description: string;
-  accent: keyof typeof featureStyles;
 }[] = [
   {
     icon: UsersRound,
     title: "Groups",
-    description: "Trip, household, or dinner — one place for every bill.",
-    accent: "teal",
+    description: "Trip, household, or dinner — one ledger for every bill.",
   },
   {
     icon: PieChart,
     title: "Flexible splits",
     description: "Equal or exact amounts. Everyone pays their share.",
-    accent: "violet",
   },
   {
     icon: Scale,
     title: "Live balances",
     description: "See who owes whom across all groups at a glance.",
-    accent: "amber",
   },
   {
     icon: HandCoins,
     title: "Settle up",
     description: "Record payments and balances update automatically.",
-    accent: "emerald",
   },
   {
     icon: Users,
     title: "Friends",
     description: "Connect and invite people into new groups easily.",
-    accent: "sky",
   },
   {
     icon: Wallet,
     title: "Expense history",
     description: "Full split breakdown on every expense, anytime.",
-    accent: "rose",
   },
 ];
 
 const steps = [
-  "Create your account",
-  "Add friends & a group",
-  "Log expenses & splits",
-  "Settle when you're ready",
+  { label: "Create your account", detail: "Sign up in seconds — no card required." },
+  { label: "Add friends & a group", detail: "Invite the people you share costs with." },
+  { label: "Log expenses & splits", detail: "Equal or exact, you decide the breakdown." },
+  { label: "Settle when you're ready", detail: "Record payments and stay even." },
 ];
-
-const stepColors = ["bg-teal-600", "bg-violet-600", "bg-amber-500", "bg-rose-500"];
 
 export function LandingPage({
   isAuthenticated = false,
@@ -81,76 +62,234 @@ export function LandingPage({
   isAuthenticated?: boolean;
 }) {
   return (
-    <div className="landing flex min-h-full flex-col bg-gradient-to-b from-teal-50/80 via-white to-violet-50/50 text-foreground">
+    <div className="flex min-h-full flex-col bg-background text-foreground">
       <LandingNav isAuthenticated={isAuthenticated} />
 
       <main className="flex-1">
-        <section className="relative overflow-hidden px-4 pb-20 pt-14 sm:px-6 sm:pb-28 sm:pt-20">
+        {/* Hero */}
+        <section className="relative overflow-hidden">
           <div
-            className="pointer-events-none absolute -top-20 left-1/2 size-[480px] -translate-x-1/2 rounded-full bg-teal-300/30 blur-3xl"
+            className="paper-grain pointer-events-none absolute inset-0 opacity-50"
             aria-hidden
           />
-          <div
-            className="pointer-events-none absolute -right-10 top-20 size-56 rounded-full bg-violet-300/25 blur-3xl"
-            aria-hidden
-          />
-          <div
-            className="pointer-events-none absolute bottom-0 left-10 size-40 rounded-full bg-rose-200/30 blur-2xl"
-            aria-hidden
-          />
+          <div className="relative mx-auto grid max-w-5xl gap-12 px-5 pb-20 pt-16 sm:px-8 sm:pb-28 sm:pt-24 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+            <div>
+              <p className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">
+                Shared expenses, settled
+              </p>
+              <h1 className="mt-6 font-heading text-5xl font-medium leading-[1.05] tracking-tight sm:text-6xl">
+                Split bills fairly.
+                <span className="block italic text-muted-foreground">
+                  Stay even with everyone.
+                </span>
+              </h1>
+              <p className="mt-6 max-w-md text-base leading-relaxed text-muted-foreground">
+                Track who paid what, split your way, and read clear balances like
+                a ledger — no spreadsheets, no awkward math.
+              </p>
+              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+                {isAuthenticated ? (
+                  <>
+                    <Button
+                      size="lg"
+                      nativeButton={false}
+                      className="w-full sm:w-auto"
+                      render={<Link href="/dashboard" />}
+                    >
+                      Go to dashboard
+                      <ArrowRight className="size-4" />
+                    </Button>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      nativeButton={false}
+                      className="w-full sm:w-auto"
+                      render={<Link href="/profile" />}
+                    >
+                      Profile
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      size="lg"
+                      nativeButton={false}
+                      className="w-full sm:w-auto"
+                      render={<Link href="/register" />}
+                    >
+                      Get started free
+                      <ArrowRight className="size-4" />
+                    </Button>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      nativeButton={false}
+                      className="w-full sm:w-auto"
+                      render={<Link href="/login" />}
+                    >
+                      Sign in
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
 
-          <div className="relative mx-auto max-w-2xl text-center">
-            <span className="inline-flex rounded-full bg-teal-100 px-3 py-1 text-xs font-medium text-teal-800 sm:text-sm">
-              Shared expenses, simplified
-            </span>
-            <h1 className="mt-6 text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl sm:leading-[1.15]">
-              Split bills fairly.
-              <span className="mt-1 block bg-gradient-to-r from-teal-600 via-violet-600 to-rose-500 bg-clip-text text-transparent">
-                Stay settled with friends.
+            {/* Ledger receipt motif */}
+            <div className="relative mx-auto w-full max-w-sm">
+              <div className="rounded-lg border border-border bg-card p-6 shadow-[0_1px_0_var(--border)]">
+                <div className="flex items-baseline justify-between border-b border-dashed border-border pb-4">
+                  <span className="font-heading text-lg font-medium tracking-tight">
+                    Lisbon trip
+                  </span>
+                  <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+                    4 people
+                  </span>
+                </div>
+                <ul className="divide-y divide-border text-sm">
+                  {[
+                    { name: "Dinner at Time Out", who: "Ana paid", amt: "€84.00" },
+                    { name: "Tram passes", who: "You paid", amt: "€26.00" },
+                    { name: "Pastéis de Belém", who: "Marco paid", amt: "€12.40" },
+                  ].map((row) => (
+                    <li
+                      key={row.name}
+                      className="flex items-center justify-between py-3"
+                    >
+                      <div className="min-w-0">
+                        <p className="truncate font-medium">{row.name}</p>
+                        <p className="text-xs text-muted-foreground">{row.who}</p>
+                      </div>
+                      <span className="tabular font-mono text-sm">{row.amt}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-4 flex items-center justify-between border-t border-dashed border-border pt-4">
+                  <span className="text-sm text-muted-foreground">
+                    Your balance
+                  </span>
+                  <span className="tabular font-mono text-base font-medium text-positive">
+                    + €30.60
+                  </span>
+                </div>
+              </div>
+              <div
+                className="absolute -right-3 -top-3 -z-10 size-full rounded-lg border border-border"
+                aria-hidden
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Features */}
+        <section
+          id="features"
+          className="scroll-mt-20 border-t border-border"
+        >
+          <div className="mx-auto max-w-5xl px-5 py-16 sm:px-8 sm:py-24">
+            <div className="flex items-end justify-between gap-6">
+              <h2 className="font-heading text-3xl font-medium tracking-tight sm:text-4xl">
+                Built for real-life splitting
+              </h2>
+              <span className="hidden font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground sm:block">
+                01 — Features
               </span>
-            </h1>
-            <p className="mt-5 text-base leading-relaxed text-slate-600 sm:text-lg">
-              Track who paid what, split your way, and see clear balances — no
-              spreadsheets.
+            </div>
+
+            <ul className="mt-12 grid border-l border-t border-border sm:grid-cols-2 lg:grid-cols-3">
+              {features.map(({ icon: Icon, title, description }) => (
+                <li
+                  key={title}
+                  className="group border-b border-r border-border p-7 transition-colors hover:bg-muted/40"
+                >
+                  <Icon className="size-5 text-muted-foreground transition-colors group-hover:text-foreground" />
+                  <h3 className="mt-5 font-heading text-lg font-medium tracking-tight">
+                    {title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    {description}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* How it works */}
+        <section
+          id="how-it-works"
+          className="scroll-mt-20 border-t border-border bg-muted/30"
+        >
+          <div className="mx-auto max-w-5xl px-5 py-16 sm:px-8 sm:py-24">
+            <div className="flex items-end justify-between gap-6">
+              <h2 className="font-heading text-3xl font-medium tracking-tight sm:text-4xl">
+                How it works
+              </h2>
+              <span className="hidden font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground sm:block">
+                02 — Flow
+              </span>
+            </div>
+            <ol className="mt-12 border-t border-border">
+              {steps.map(({ label, detail }, i) => (
+                <li
+                  key={label}
+                  className="grid grid-cols-[auto_1fr] items-baseline gap-6 border-b border-border py-6 sm:gap-10"
+                >
+                  <span className="font-mono text-sm text-muted-foreground">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-8">
+                    <p className="font-heading text-xl font-medium tracking-tight">
+                      {label}
+                    </p>
+                    <p className="text-sm text-muted-foreground sm:max-w-xs sm:text-right">
+                      {detail}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        {/* CTA */}
+        <section
+          id="get-started"
+          className="scroll-mt-20 border-t border-border"
+        >
+          <div className="mx-auto max-w-5xl px-5 py-20 text-center sm:px-8 sm:py-28">
+            <h2 className="mx-auto max-w-2xl font-heading text-4xl font-medium leading-tight tracking-tight sm:text-5xl">
+              Ready for your next shared bill?
+            </h2>
+            <p className="mt-4 text-sm text-muted-foreground sm:text-base">
+              Free account · split breakdowns on every expense · always settled.
             </p>
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               {isAuthenticated ? (
-                <>
-                  <Button
-                    size="lg"
-                    nativeButton={false}
-                    className="w-full bg-teal-600 text-white shadow-md shadow-teal-600/25 hover:bg-teal-700 sm:w-auto"
-                    render={<Link href="/dashboard" />}
-                  >
-                    Go to dashboard
-                    <ArrowRight className="size-4" />
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    nativeButton={false}
-                    className="w-full border-teal-200 text-teal-700 hover:bg-teal-50 sm:w-auto"
-                    render={<Link href="/profile" />}
-                  >
-                    Profile
-                  </Button>
-                </>
+                <Button
+                  size="lg"
+                  nativeButton={false}
+                  className="w-full sm:w-auto"
+                  render={<Link href="/dashboard" />}
+                >
+                  Open dashboard
+                  <ArrowRight className="size-4" />
+                </Button>
               ) : (
                 <>
                   <Button
                     size="lg"
                     nativeButton={false}
-                    className="w-full bg-teal-600 text-white shadow-md shadow-teal-600/25 hover:bg-teal-700 sm:w-auto"
+                    className="w-full sm:w-auto"
                     render={<Link href="/register" />}
                   >
-                    Get started free
+                    Create account
                     <ArrowRight className="size-4" />
                   </Button>
                   <Button
                     size="lg"
                     variant="outline"
                     nativeButton={false}
-                    className="w-full border-slate-300 sm:w-auto"
+                    className="w-full sm:w-auto"
                     render={<Link href="/login" />}
                   >
                     Sign in
@@ -160,165 +299,37 @@ export function LandingPage({
             </div>
           </div>
         </section>
-
-        <section
-          id="features"
-          className="scroll-mt-20 px-4 py-16 sm:px-6 sm:py-20"
-        >
-          <div className="mx-auto max-w-5xl">
-            <h2 className="text-center text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
-              Built for real-life splitting
-            </h2>
-            <p className="mx-auto mt-2 max-w-md text-center text-sm text-slate-600 sm:text-base">
-              Groups, splits, balances, and settlements — all in one calm place.
-            </p>
-
-            <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
-              {features.map(({ icon: Icon, title, description, accent }) => {
-                const style = featureStyles[accent];
-                return (
-                  <li
-                    key={title}
-                    className="rounded-2xl border border-slate-200/80 bg-white/90 p-5 shadow-sm transition-shadow hover:shadow-md hover:shadow-teal-100"
-                  >
-                    <div
-                      className={cn(
-                        "flex size-10 items-center justify-center rounded-xl",
-                        style.bg,
-                      )}
-                    >
-                      <Icon className={cn("size-5", style.icon)} />
-                    </div>
-                    <h3 className="mt-4 font-medium text-slate-900">{title}</h3>
-                    <p className="mt-1.5 text-sm leading-relaxed text-slate-600">
-                      {description}
-                    </p>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </section>
-
-        <section
-          id="how-it-works"
-          className="scroll-mt-20 border-y border-teal-100 bg-white/60 px-4 py-16 sm:px-6 sm:py-20"
-        >
-          <div className="mx-auto max-w-3xl">
-            <h2 className="text-center text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
-              How it works
-            </h2>
-            <ol className="mt-10 space-y-0">
-              {steps.map((label, i) => (
-                <li
-                  key={label}
-                  className="flex items-start gap-4 border-b border-slate-200/80 py-5 last:border-0"
-                >
-                  <span
-                    className={cn(
-                      "flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white",
-                      stepColors[i],
-                    )}
-                  >
-                    {i + 1}
-                  </span>
-                  <p className="pt-1 font-medium text-slate-800">{label}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-
-        <section
-          id="get-started"
-          className="scroll-mt-20 px-4 py-16 sm:px-6 sm:py-20"
-        >
-          <div className="mx-auto max-w-2xl text-center">
-            <div className="rounded-2xl bg-gradient-to-br from-teal-500 via-violet-500 to-rose-500 p-[2px] shadow-lg shadow-violet-200/50">
-              <div className="rounded-[14px] bg-white px-6 py-10 sm:px-10 sm:py-12">
-                <h2 className="text-xl font-semibold text-slate-900 sm:text-2xl">
-                  Ready for your next shared bill?
-                </h2>
-                <p className="mt-2 text-sm text-slate-600 sm:text-base">
-                  Free account · dashboard · split breakdowns on every expense
-                </p>
-                <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
-                  {isAuthenticated ? (
-                    <>
-                      <Button
-                        size="lg"
-                        nativeButton={false}
-                        className="w-full bg-teal-600 text-white hover:bg-teal-700 sm:w-auto"
-                        render={<Link href="/dashboard" />}
-                      >
-                        Dashboard
-                      </Button>
-                      <Button
-                        size="lg"
-                        variant="outline"
-                        nativeButton={false}
-                        className="w-full sm:w-auto"
-                        render={<Link href="/profile" />}
-                      >
-                        Profile
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <Button
-                        size="lg"
-                        nativeButton={false}
-                        className="w-full bg-teal-600 text-white hover:bg-teal-700 sm:w-auto"
-                        render={<Link href="/register" />}
-                      >
-                        Create account
-                      </Button>
-                      <Button
-                        size="lg"
-                        variant="outline"
-                        nativeButton={false}
-                        className="w-full sm:w-auto"
-                        render={<Link href="/login" />}
-                      >
-                        Sign in
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
       </main>
 
-      <footer className="border-t border-teal-100 bg-white/80 px-4 py-6 sm:px-6">
-        <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-3 text-sm text-slate-600 sm:flex-row">
-          <p>© {new Date().getFullYear()} SplitExpense</p>
-          <nav className="flex flex-wrap justify-center gap-5">
-            <a href="#features" className="hover:text-teal-600">
+      <footer className="border-t border-border">
+        <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-3 px-5 py-8 text-sm text-muted-foreground sm:flex-row sm:px-8">
+          <p className="font-mono text-xs uppercase tracking-[0.15em]">
+            © {new Date().getFullYear()} SplitExpense
+          </p>
+          <nav className="flex flex-wrap justify-center gap-6">
+            <a href="#features" className="transition-colors hover:text-foreground">
               Features
             </a>
-            <a href="#how-it-works" className="hover:text-teal-600">
+            <a
+              href="#how-it-works"
+              className="transition-colors hover:text-foreground"
+            >
               How it works
             </a>
             {isAuthenticated ? (
-              <>
-                <Link href="/dashboard" className="hover:text-teal-600">
-                  Dashboard
-                </Link>
-                <Link href="/profile" className="font-medium text-teal-600">
-                  Profile
-                </Link>
-              </>
+              <Link
+                href="/dashboard"
+                className="transition-colors hover:text-foreground"
+              >
+                Dashboard
+              </Link>
             ) : (
-              <>
-                <Link href="/login" className="hover:text-teal-600">
-                  Sign in
-                </Link>
-                <Link href="/register" className="font-medium text-teal-600">
-                  Register
-                </Link>
-              </>
+              <Link
+                href="/login"
+                className="transition-colors hover:text-foreground"
+              >
+                Sign in
+              </Link>
             )}
           </nav>
         </div>

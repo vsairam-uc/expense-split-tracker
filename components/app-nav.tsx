@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
+  Activity,
   Users,
   UsersRound,
   UserCircle,
@@ -16,6 +17,7 @@ import { logoutAction } from "@/lib/actions/auth";
 
 const baseNavItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/activity", label: "Activity", icon: Activity },
   { href: "/friends", label: "Friends", icon: Users },
   { href: "/groups", label: "Groups", icon: UsersRound },
   { href: "/profile", label: "Profile", icon: UserCircle },
@@ -35,24 +37,53 @@ export function AppNav({
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-3 py-3 sm:gap-4 sm:px-4">
+      <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-4 sm:gap-4">
           <Link
             href="/"
-            className="truncate text-base font-semibold sm:text-lg"
+            className="flex shrink-0 items-baseline gap-2 font-heading text-lg font-medium tracking-tight"
           >
+            <span
+              className="size-1.5 translate-y-[-2px] rounded-full bg-foreground"
+              aria-hidden
+            />
             SplitExpense
           </Link>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <span className="hidden max-w-[120px] truncate text-sm text-muted-foreground md:inline lg:max-w-none">
+
+          <nav
+            className="hidden items-center gap-7 md:flex"
+            aria-label="Primary navigation"
+          >
+            {navItems.map(({ href, label }) => {
+              const active = pathname.startsWith(href);
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={cn(
+                    "relative py-1 text-sm transition-colors hover:text-foreground",
+                    active ? "text-foreground" : "text-muted-foreground",
+                  )}
+                >
+                  {label}
+                  {active && (
+                    <span className="absolute -bottom-[17px] left-0 right-0 h-px bg-foreground" />
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+
+          <div className="flex items-center gap-3">
+            <span className="hidden max-w-[140px] truncate text-sm text-muted-foreground lg:inline">
               {userName}
             </span>
             <form action={logoutAction}>
               <Button
                 type="submit"
-                variant="outline"
+                variant="ghost"
                 size="sm"
-                className="gap-1.5"
+                className="gap-1.5 text-muted-foreground"
               >
                 <LogOut className="size-4" />
                 <span className="hidden sm:inline">Sign out</span>
@@ -63,10 +94,10 @@ export function AppNav({
       </header>
 
       <nav
-        className="fixed bottom-0 left-0 right-0 z-40 border-t bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur supports-[backdrop-filter]:bg-card/80 md:hidden"
+        className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/90 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
         aria-label="Main navigation"
       >
-        <div className="mx-auto flex max-w-6xl justify-around px-1 py-1">
+        <div className="mx-auto flex max-w-6xl justify-around px-1 py-1.5">
           {navItems.map(({ href, label, icon: Icon }) => {
             const active = pathname.startsWith(href);
             return (
@@ -74,42 +105,15 @@ export function AppNav({
                 key={href}
                 href={href}
                 className={cn(
-                  "flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-lg px-1 py-2 text-[10px] font-medium transition-colors sm:text-xs",
-                  active
-                    ? "text-foreground"
-                    : "text-muted-foreground",
+                  "flex min-w-0 flex-1 flex-col items-center gap-1 px-1 py-1.5 text-[10px] transition-colors sm:text-xs",
+                  active ? "text-foreground" : "text-muted-foreground",
                 )}
               >
-                <Icon
-                  className={cn("size-5 shrink-0", active && "text-primary")}
-                />
+                <Icon className="size-5 shrink-0" />
                 <span className="truncate">{label}</span>
               </Link>
             );
           })}
-        </div>
-      </nav>
-
-      <nav
-        className="sticky top-[53px] z-30 hidden border-b bg-muted/30 md:block"
-        aria-label="Desktop navigation"
-      >
-        <div className="mx-auto flex max-w-6xl gap-1 px-4 py-1">
-          {navItems.map(({ href, label, icon: Icon }) => (
-            <Link
-              key={href}
-              href={href}
-              className={cn(
-                "flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-muted",
-                pathname.startsWith(href)
-                  ? "bg-muted text-foreground"
-                  : "text-muted-foreground",
-              )}
-            >
-              <Icon className="size-4" />
-              {label}
-            </Link>
-          ))}
         </div>
       </nav>
     </>

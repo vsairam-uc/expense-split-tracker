@@ -28,15 +28,18 @@ export function AuthForm({ mode, action }: AuthFormProps) {
   const [state, formAction, pending] = useActionState(action, {});
 
   return (
-    <Card className="w-full max-w-md shadow-sm">
-      <CardHeader>
-        <CardTitle>
+    <Card className="w-full max-w-md">
+      <CardHeader className="gap-2 pt-2">
+        <p className="font-mono text-[0.7rem] uppercase tracking-[0.2em] text-muted-foreground">
+          {mode === "login" ? "Sign in" : "Register"}
+        </p>
+        <CardTitle className="font-heading text-2xl tracking-tight">
           {mode === "login" ? "Welcome back" : "Create an account"}
         </CardTitle>
         <CardDescription>
           {mode === "login"
-            ? "Sign in to manage shared expenses"
-            : "Register to start splitting expenses with friends"}
+            ? "Sign in to manage shared expenses."
+            : "Register to start splitting expenses with friends."}
         </CardDescription>
       </CardHeader>
       <form action={formAction}>
@@ -73,7 +76,12 @@ export function AuthForm({ mode, action }: AuthFormProps) {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
-          <Button type="submit" className="w-full" disabled={pending}>
+          <Button
+            type="submit"
+            size="lg"
+            className="w-full"
+            disabled={pending}
+          >
             {pending
               ? "Please wait..."
               : mode === "login"
@@ -84,14 +92,20 @@ export function AuthForm({ mode, action }: AuthFormProps) {
             {mode === "login" ? (
               <>
                 No account?{" "}
-                <Link href="/register" className="text-primary underline">
+                <Link
+                  href="/register"
+                  className="font-medium text-foreground underline underline-offset-4"
+                >
                   Register
                 </Link>
               </>
             ) : (
               <>
                 Already have an account?{" "}
-                <Link href="/login" className="text-primary underline">
+                <Link
+                  href="/login"
+                  className="font-medium text-foreground underline underline-offset-4"
+                >
                   Sign in
                 </Link>
               </>

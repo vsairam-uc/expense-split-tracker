@@ -1,14 +1,7 @@
 import Link from "next/link";
 import { format } from "date-fns";
-import { Plus } from "lucide-react";
+import { Plus, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/page-header";
 import { auth } from "@/lib/auth";
@@ -37,10 +30,11 @@ export default async function DashboardPage() {
   });
 
   return (
-    <div className="space-y-6 sm:space-y-8">
+    <div className="space-y-12">
       <PageHeader
+        eyebrow="Overview"
         title="Dashboard"
-        description="Overview of your shared expenses"
+        description="A clear read on your shared expenses."
       >
         <Button
           nativeButton={false}
@@ -52,92 +46,117 @@ export default async function DashboardPage() {
         </Button>
       </PageHeader>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>You are owed</CardDescription>
-            <CardTitle className="text-2xl text-green-600 sm:text-3xl">
-              {formatCurrency(totalOwed)}
-            </CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>You owe</CardDescription>
-            <CardTitle className="text-2xl text-red-600 sm:text-3xl">
-              {formatCurrency(totalOwing)}
-            </CardTitle>
-          </CardHeader>
-        </Card>
+      <div className="grid grid-cols-1 divide-y divide-border overflow-hidden rounded-lg border border-border sm:grid-cols-2 sm:divide-x sm:divide-y-0">
+        <div className="p-6">
+          <p className="font-mono text-[0.7rem] uppercase tracking-[0.18em] text-muted-foreground">
+            You are owed
+          </p>
+          <p className="tabular mt-3 font-mono text-3xl font-medium text-positive sm:text-4xl">
+            {formatCurrency(totalOwed)}
+          </p>
+        </div>
+        <div className="p-6">
+          <p className="font-mono text-[0.7rem] uppercase tracking-[0.18em] text-muted-foreground">
+            You owe
+          </p>
+          <p className="tabular mt-3 font-mono text-3xl font-medium text-negative sm:text-4xl">
+            {formatCurrency(totalOwing)}
+          </p>
+        </div>
       </div>
 
-      <section className="space-y-3 sm:space-y-4">
-        <h2 className="text-base font-semibold sm:text-lg">Groups</h2>
+      <section className="space-y-4">
+        <div className="flex items-baseline justify-between">
+          <h2 className="font-heading text-xl font-medium tracking-tight">
+            Groups
+          </h2>
+          <Link
+            href="/groups"
+            className="font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground transition-colors hover:text-foreground"
+          >
+            All groups
+          </Link>
+        </div>
         {groupSummaries.length === 0 ? (
-          <Card>
-            <CardContent className="py-8 text-center text-sm text-muted-foreground sm:text-base">
-              No groups yet.{" "}
-              <Link href="/groups" className="text-primary underline">
-                Create or join a group
-              </Link>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid gap-3">
-            {groupSummaries.map((g) => (
-              <Link key={g.groupId} href={`/groups/${g.groupId}`}>
-                <Card className="transition-colors hover:bg-muted/50">
-                  <CardContent className="flex flex-col gap-2 py-4 sm:flex-row sm:items-center sm:justify-between">
-                    <span className="font-medium">{g.groupName}</span>
-                    <Badge
-                      className="w-fit max-w-full truncate"
-                      variant={
-                        g.balance > 0.01
-                          ? "default"
-                          : g.balance < -0.01
-                            ? "destructive"
-                            : "secondary"
-                      }
-                    >
-                      {g.balance > 0.01
-                        ? `owed ${formatCurrency(g.balance)}`
-                        : g.balance < -0.01
-                          ? `owe ${formatCurrency(Math.abs(g.balance))}`
-                          : "settled up"}
-                    </Badge>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
+          <div className="rounded-lg border border-dashed border-border py-12 text-center text-sm text-muted-foreground">
+            No groups yet.{" "}
+            <Link
+              href="/groups"
+              className="font-medium text-foreground underline underline-offset-4"
+            >
+              Create or join a group
+            </Link>
           </div>
+        ) : (
+          <ul className="overflow-hidden rounded-lg border border-border">
+            {groupSummaries.map((g) => (
+              <li key={g.groupId} className="border-b border-border last:border-0">
+                <Link
+                  href={`/groups/${g.groupId}`}
+                  className="flex items-center justify-between gap-3 px-5 py-4 transition-colors hover:bg-muted/40"
+                >
+                  <span className="min-w-0 truncate font-medium">
+                    {g.groupName}
+                  </span>
+                  <Badge
+                    className="shrink-0 font-mono"
+                    variant={
+                      g.balance > 0.01
+                        ? "positive"
+                        : g.balance < -0.01
+                          ? "negative"
+                          : "secondary"
+                    }
+                  >
+                    {g.balance > 0.01
+                      ? `owed ${formatCurrency(g.balance)}`
+                      : g.balance < -0.01
+                        ? `owe ${formatCurrency(Math.abs(g.balance))}`
+                        : "settled up"}
+                  </Badge>
+                </Link>
+              </li>
+            ))}
+          </ul>
         )}
       </section>
 
-      <section className="space-y-3 sm:space-y-4">
-        <h2 className="text-base font-semibold sm:text-lg">Recent activity</h2>
+      <section className="space-y-4">
+        <div className="flex items-baseline justify-between">
+          <h2 className="font-heading text-xl font-medium tracking-tight">
+            Recent activity
+          </h2>
+          <Link
+            href="/activity"
+            className="font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground transition-colors hover:text-foreground"
+          >
+            View all
+          </Link>
+        </div>
         {recentExpenses.length === 0 ? (
-          <Card>
-            <CardContent className="py-8 text-center text-muted-foreground">
-              No expenses yet
-            </CardContent>
-          </Card>
+          <div className="rounded-lg border border-dashed border-border py-12 text-center text-sm text-muted-foreground">
+            No expenses yet.
+          </div>
         ) : (
-          <ul className="divide-y rounded-lg border">
+          <ul className="overflow-hidden rounded-lg border border-border">
             {recentExpenses.map((expense) => (
-              <li key={expense.id}>
+              <li key={expense.id} className="border-b border-border last:border-0">
                 <Link
                   href={`/expenses/${expense.id}`}
-                  className="flex flex-col gap-1 p-4 hover:bg-muted/50 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+                  className="group flex items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-muted/40"
                 >
                   <div className="min-w-0">
                     <p className="truncate font-medium">{expense.description}</p>
-                    <p className="text-xs text-muted-foreground sm:text-sm">
+                    <p className="mt-0.5 text-xs text-muted-foreground">
                       {expense.group.name} · {expense.paidBy.name} ·{" "}
                       {format(expense.expenseDate, "MMM d, yyyy")}
                     </p>
                   </div>
-                  <span className="shrink-0 font-medium sm:text-right">
-                    {formatCurrency(decimalToNumber(expense.amount))}
+                  <span className="flex shrink-0 items-center gap-2">
+                    <span className="tabular font-mono text-sm font-medium">
+                      {formatCurrency(decimalToNumber(expense.amount))}
+                    </span>
+                    <ArrowUpRight className="size-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
                   </span>
                 </Link>
               </li>

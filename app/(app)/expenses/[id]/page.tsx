@@ -25,8 +25,9 @@ export default async function ExpenseDetailPage({
   if (!expense) notFound();
 
   return (
-    <div className="mx-auto w-full max-w-2xl space-y-6">
+    <div className="mx-auto w-full max-w-2xl space-y-8">
       <PageHeader
+        eyebrow="Expense"
         title={expense.description}
         description={`${expense.group.name} · ${format(expense.expenseDate, "MMM d, yyyy")}`}
       >
@@ -49,21 +50,21 @@ export default async function ExpenseDetailPage({
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between gap-4">
             <span className="text-muted-foreground">Amount</span>
-            <span className="text-lg font-bold sm:text-xl">
+            <span className="tabular font-mono text-xl font-medium">
               {formatCurrency(expense.amount)}
             </span>
           </div>
           <div className="flex items-center justify-between gap-4">
             <span className="text-muted-foreground">Paid by</span>
-            <span className="text-right">{expense.paidBy.name}</span>
+            <span className="text-right font-medium">{expense.paidBy.name}</span>
           </div>
           <div className="flex items-center justify-between gap-4">
             <span className="text-muted-foreground">Category</span>
-            <Badge variant="secondary">{expense.category.toLowerCase()}</Badge>
+            <Badge variant="outline">{expense.category.toLowerCase()}</Badge>
           </div>
           <div className="flex items-center justify-between gap-4">
             <span className="text-muted-foreground">Split type</span>
-            <span>{expense.splitType.toLowerCase()}</span>
+            <span className="capitalize">{expense.splitType.toLowerCase()}</span>
           </div>
           {expense.notes && (
             <div>
@@ -79,14 +80,14 @@ export default async function ExpenseDetailPage({
           <CardTitle className="text-lg">Split breakdown</CardTitle>
         </CardHeader>
         <CardContent>
-          <ul className="divide-y">
+          <ul className="divide-y divide-border">
             {expense.splits.map((split) => (
               <li
                 key={split.id}
                 className="flex items-center justify-between gap-4 py-3 text-sm"
               >
                 <span className="min-w-0 truncate">{split.user.name}</span>
-                <span className="shrink-0 font-medium">
+                <span className="tabular shrink-0 font-mono font-medium">
                   {formatCurrency(split.amount)}
                 </span>
               </li>
@@ -97,9 +98,9 @@ export default async function ExpenseDetailPage({
 
       <Link
         href={`/groups/${expense.groupId}`}
-        className="inline-block text-sm text-primary underline"
+        className="inline-block font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground transition-colors hover:text-foreground"
       >
-        Back to group
+        ← Back to group
       </Link>
     </div>
   );

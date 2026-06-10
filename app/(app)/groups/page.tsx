@@ -22,10 +22,11 @@ export default async function GroupsPage() {
   const balanceMap = new Map(groupSummaries.map((g) => [g.groupId, g.balance]));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       <PageHeader
+        eyebrow="Shared"
         title="Groups"
-        description="Manage expense groups with friends"
+        description="Manage expense groups with friends."
       >
         <Button
           nativeButton={false}
@@ -38,35 +39,33 @@ export default async function GroupsPage() {
       </PageHeader>
 
       {groups.length === 0 ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>No groups yet</CardTitle>
-            <CardDescription>
-              Create a group to start tracking shared expenses
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button
-              nativeButton={false}
-              render={<Link href="/groups/new" />}
-              className="w-full sm:w-auto"
-            >
-              Create your first group
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="rounded-lg border border-dashed border-border px-6 py-16 text-center">
+          <h2 className="font-heading text-xl font-medium tracking-tight">
+            No groups yet
+          </h2>
+          <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
+            Create a group to start tracking shared expenses.
+          </p>
+          <Button
+            nativeButton={false}
+            render={<Link href="/groups/new" />}
+            className="mt-6"
+          >
+            Create your first group
+          </Button>
+        </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {groups.map((group) => {
             const balance = balanceMap.get(group.id) ?? 0;
             return (
               <Link key={group.id} href={`/groups/${group.id}`}>
-                <Card className="h-full transition-colors hover:bg-muted/50">
+                <Card className="h-full hover:bg-muted/40">
                   <CardHeader>
                     <div className="flex flex-wrap items-start justify-between gap-2">
                       <CardTitle className="text-lg">{group.name}</CardTitle>
                       {group.isPersonal && (
-                        <Badge variant="secondary">Personal</Badge>
+                        <Badge variant="outline">Personal</Badge>
                       )}
                     </div>
                     {group.description && (
@@ -75,18 +74,18 @@ export default async function GroupsPage() {
                       </CardDescription>
                     )}
                   </CardHeader>
-                  <CardContent className="space-y-2">
-                    <p className="text-sm text-muted-foreground">
+                  <CardContent className="flex items-center justify-between gap-3">
+                    <p className="font-mono text-xs uppercase tracking-[0.12em] text-muted-foreground">
                       {group.members.length} members · {group._count.expenses}{" "}
                       expenses
                     </p>
                     <Badge
-                      className="max-w-full truncate"
+                      className="shrink-0 font-mono"
                       variant={
                         balance > 0.01
-                          ? "default"
+                          ? "positive"
                           : balance < -0.01
-                            ? "destructive"
+                            ? "negative"
                             : "secondary"
                       }
                     >

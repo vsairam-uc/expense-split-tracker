@@ -6,16 +6,30 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-1 flex-col">
-      <div className="mx-auto w-full max-w-6xl px-4 pt-4 sm:px-6">
+    <div className="relative flex flex-1 flex-col bg-background">
+      <div
+        className="paper-grain pointer-events-none absolute inset-0 opacity-40"
+        aria-hidden
+      />
+      <div className="relative mx-auto flex w-full max-w-6xl items-center justify-between px-5 pt-6 sm:px-8">
         <Link
           href="/"
-          className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          className="flex items-baseline gap-2 font-heading text-lg font-medium tracking-tight"
         >
-          ← Back to home
+          <span
+            className="size-1.5 translate-y-[-2px] rounded-full bg-foreground"
+            aria-hidden
+          />
+          SplitExpense
+        </Link>
+        <Link
+          href="/"
+          className="font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground transition-colors hover:text-foreground"
+        >
+          ← Home
         </Link>
       </div>
-      <div className="flex flex-1 items-center justify-center px-4 py-8 pb-12 sm:py-12">
+      <div className="relative flex flex-1 items-center justify-center px-5 py-12 pb-16 sm:py-16">
         {children}
       </div>
     </div>

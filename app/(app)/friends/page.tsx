@@ -16,17 +16,18 @@ export default async function FriendsPage() {
   const { friends, pendingIncoming, pendingOutgoing } = await getFriendsData();
 
   return (
-    <div className="space-y-6 sm:space-y-8">
+    <div className="space-y-10">
       <PageHeader
+        eyebrow="People"
         title="Friends"
-        description="Add friends to split expenses with them"
+        description="Add friends to split expenses with them."
       />
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg sm:text-xl">Find friends</CardTitle>
+          <CardTitle className="text-lg">Find friends</CardTitle>
           <CardDescription>
-            Search for registered users by name or email
+            Search for registered users by name or email.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -36,14 +37,14 @@ export default async function FriendsPage() {
 
       {pendingIncoming.length > 0 && (
         <section className="space-y-3">
-          <h2 className="text-base font-semibold sm:text-lg">
+          <h2 className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
             Incoming requests
           </h2>
-          <ul className="divide-y rounded-lg border">
+          <ul className="overflow-hidden rounded-lg border border-border">
             {pendingIncoming.map((req) => (
               <li
                 key={req.id}
-                className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"
+                className="flex flex-col gap-3 border-b border-border p-5 last:border-0 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="min-w-0">
                   <p className="font-medium">{req.requester.name}</p>
@@ -60,12 +61,19 @@ export default async function FriendsPage() {
 
       {pendingOutgoing.length > 0 && (
         <section className="space-y-3">
-          <h2 className="text-base font-semibold sm:text-lg">Sent requests</h2>
-          <ul className="divide-y rounded-lg border">
+          <h2 className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
+            Sent requests
+          </h2>
+          <ul className="overflow-hidden rounded-lg border border-border">
             {pendingOutgoing.map((req) => (
-              <li key={req.id} className="p-4">
+              <li
+                key={req.id}
+                className="flex items-center justify-between border-b border-border p-5 last:border-0"
+              >
                 <p className="font-medium">{req.addressee.name}</p>
-                <p className="text-sm text-muted-foreground">Pending</p>
+                <span className="font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground">
+                  Pending
+                </span>
               </li>
             ))}
           </ul>
@@ -73,19 +81,19 @@ export default async function FriendsPage() {
       )}
 
       <section className="space-y-3">
-        <h2 className="text-base font-semibold sm:text-lg">Your friends</h2>
+        <h2 className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
+          Your friends
+        </h2>
         {friends.length === 0 ? (
-          <Card>
-            <CardContent className="py-8 text-center text-muted-foreground">
-              No friends yet. Search above to add someone.
-            </CardContent>
-          </Card>
+          <div className="rounded-lg border border-dashed border-border py-12 text-center text-sm text-muted-foreground">
+            No friends yet. Search above to add someone.
+          </div>
         ) : (
-          <ul className="divide-y rounded-lg border">
+          <ul className="overflow-hidden rounded-lg border border-border">
             {friends.map((friend) => (
               <li
                 key={friend.id}
-                className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"
+                className="flex flex-col gap-3 border-b border-border p-5 last:border-0 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="min-w-0">
                   <p className="font-medium">{friend.name}</p>
@@ -98,9 +106,7 @@ export default async function FriendsPage() {
                   variant="outline"
                   size="sm"
                   className="w-full shrink-0 sm:w-auto"
-                  render={
-                    <Link href={`/expenses/new?with=${friend.id}`} />
-                  }
+                  render={<Link href={`/expenses/new?with=${friend.id}`} />}
                 >
                   <Receipt className="size-4" />
                   Split expense

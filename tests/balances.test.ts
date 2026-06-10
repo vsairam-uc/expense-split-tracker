@@ -1,10 +1,61 @@
 import { describe, expect, it } from "vitest";
 import {
   computeNetBalances,
+  computePairwiseBalance,
   equalSplit,
   simplifyDebts,
   validateExactSplits,
 } from "@/lib/balances";
+
+describe("computePairwiseBalance", () => {
+  it("returns positive when the other person owes the user", () => {
+    const expenses = [
+      {
+        paidById: "a",
+        amount: 40,
+        splits: [
+          { userId: "a", amount: 20 },
+          { userId: "b", amount: 20 },
+        ],
+      },
+    ];
+    expect(computePairwiseBalance("a", "b", expenses)).toBeCloseTo(20, 2);
+    expect(computePairwiseBalance("b", "a", expenses)).toBeCloseTo(-20, 2);
+  });
+
+  it("ignores splits that do not involve both users", () => {
+    const expenses = [
+      {
+        paidById: "a",
+        amount: 30,
+        splits: [
+          { userId: "a", amount: 10 },
+          { userId: "b", amount: 10 },
+          { userId: "c", amount: 10 },
+        ],
+      },
+    ];
+    expect(computePairwiseBalance("a", "b", expenses)).toBeCloseTo(10, 2);
+  });
+
+  it("applies settlements between the two users", () => {
+    const expenses = [
+      {
+        paidById: "a",
+        amount: 40,
+        splits: [
+          { userId: "a", amount: 20 },
+          { userId: "b", amount: 20 },
+        ],
+      },
+    ];
+    const settlements = [{ fromUserId: "b", toUserId: "a", amount: 20 }];
+    expect(computePairwiseBalance("a", "b", expenses, settlements)).toBeCloseTo(
+      0,
+      2,
+    );
+  });
+});
 
 describe("equalSplit", () => {
   it("splits evenly when divisible", () => {

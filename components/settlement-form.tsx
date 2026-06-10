@@ -43,6 +43,9 @@ export function SettlementForm({
   );
   const [toUserId, setToUserId] = useState(defaultDebt?.toUserId ?? "");
 
+  const nameFor = (id: unknown) =>
+    members.find((m) => m.id === id)?.name ?? "";
+
   return (
     <form action={formAction} className="space-y-4">
       <input type="hidden" name="groupId" value={groupId} />
@@ -59,7 +62,7 @@ export function SettlementForm({
           onValueChange={(v) => v && setFromUserId(v)}
         >
             <SelectTrigger className="w-full">
-              <SelectValue />
+              <SelectValue>{(value) => nameFor(value)}</SelectValue>
             </SelectTrigger>
           <SelectContent>
             {members.map((m) => (
@@ -75,7 +78,9 @@ export function SettlementForm({
         <Label>To (who received)</Label>
         <Select value={toUserId} onValueChange={(v) => v && setToUserId(v)}>
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select recipient" />
+            <SelectValue placeholder="Select recipient">
+              {(value) => nameFor(value)}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             {members.map((m) => (

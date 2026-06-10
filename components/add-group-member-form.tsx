@@ -29,7 +29,11 @@ export function AddGroupMemberForm({
     <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
       <Select value={selectedId} onValueChange={(v) => v && setSelectedId(v)}>
         <SelectTrigger className="w-full sm:min-w-[200px]">
-          <SelectValue placeholder="Add a friend..." />
+          <SelectValue placeholder="Add a friend...">
+            {(value) =>
+              friendsNotInGroup.find((f) => f.id === value)?.name ?? ""
+            }
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           {friendsNotInGroup.map((f) => (

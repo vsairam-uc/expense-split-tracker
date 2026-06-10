@@ -54,7 +54,7 @@ export function CreateGroupForm({
             {friends.length === 0 ? (
               <p className="text-sm text-muted-foreground">
                 You need friends first.{" "}
-                <Link href="/friends" className="text-primary underline">
+                <Link href="/dashboard" className="text-primary underline">
                   Add friends
                 </Link>
               </p>

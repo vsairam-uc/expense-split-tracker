@@ -52,7 +52,7 @@ export default async function NewFriendExpensePage({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button nativeButton={false} render={<Link href="/friends" />}>
+            <Button nativeButton={false} render={<Link href="/dashboard" />}>
               Find friends
             </Button>
           </CardContent>

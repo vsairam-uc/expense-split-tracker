@@ -17,7 +17,9 @@ import { formatCurrency } from "@/lib/session";
 
 export default async function GroupsPage() {
   const session = await auth();
-  const groups = await getGroupsData();
+  const allGroups = await getGroupsData();
+  // Groups with 2 members are 1-on-1 friend groups, surfaced on the Friends tab instead.
+  const groups = allGroups.filter((group) => group.members.length > 2);
   const { groupSummaries } = await getUserDashboardBalances(session!.user!.id);
   const balanceMap = new Map(groupSummaries.map((g) => [g.groupId, g.balance]));
 

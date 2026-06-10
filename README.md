@@ -1,6 +1,6 @@
-# Split Expense Tracker
+# Vasool
 
-A Splitwise-style web app for tracking and splitting shared expenses between friends and groups.
+A Splitwise-style web app for splitting bills, tracking balances, and collecting what you're owed — between friends and groups. *Vasool* (वसूल) is Hindi/Urdu slang for recovering money that's owed to you.
 
 ## Features
 

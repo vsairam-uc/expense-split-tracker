@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/logo";
 
 export default function AuthLayout({
   children,
@@ -14,13 +15,10 @@ export default function AuthLayout({
       <div className="relative mx-auto flex w-full max-w-6xl items-center justify-between px-5 pt-6 sm:px-8">
         <Link
           href="/"
-          className="flex items-baseline gap-2 font-heading text-lg font-medium tracking-tight"
+          className="flex items-center gap-2 font-heading text-lg font-medium tracking-tight"
         >
-          <span
-            className="size-1.5 translate-y-[-2px] rounded-full bg-foreground"
-            aria-hidden
-          />
-          SplitExpense
+          <Logo className="size-6" />
+          Vasool
         </Link>
         <Link
           href="/"

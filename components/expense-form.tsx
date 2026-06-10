@@ -105,6 +105,11 @@ export function ExpenseForm({
 
   const today = new Date().toISOString().split("T")[0];
 
+  const memberNameFor = (id: unknown) =>
+    members.find((m) => m.id === id)?.name ?? "";
+  const categoryLabel = (c: unknown) =>
+    typeof c === "string" ? c.charAt(0) + c.slice(1).toLowerCase() : "";
+
   return (
     <form action={formAction} className="space-y-6">
       {groupId && <input type="hidden" name="groupId" value={groupId} />}
@@ -156,7 +161,9 @@ export function ExpenseForm({
             onValueChange={(v) => v && setPaidById(v)}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select payer" />
+              <SelectValue placeholder="Select payer">
+                {(value) => memberNameFor(value)}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {members.map((m) => (
@@ -174,7 +181,7 @@ export function ExpenseForm({
             onValueChange={(v) => v && setCategory(v)}
           >
             <SelectTrigger className="w-full">
-              <SelectValue />
+              <SelectValue>{(value) => categoryLabel(value)}</SelectValue>
             </SelectTrigger>
             <SelectContent>
               {categories.map((c) => (

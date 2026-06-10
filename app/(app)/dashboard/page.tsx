@@ -1,40 +1,32 @@
 import Link from "next/link";
-import { format } from "date-fns";
-import { Plus, ArrowUpRight } from "lucide-react";
+import { Plus, Receipt } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
-import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { getUserDashboardBalances } from "@/lib/group-balances";
-import { formatCurrency, decimalToNumber } from "@/lib/session";
+import { FriendRequestActions, FriendSearch } from "@/components/friend-search";
+import {
+  getFriendsDashboardData,
+  searchUsersAction,
+} from "@/lib/actions/friends";
+import { formatCurrency } from "@/lib/session";
 
 export default async function DashboardPage() {
-  const session = await auth();
-  const userId = session!.user!.id;
-
-  const { totalOwed, totalOwing, groupSummaries } =
-    await getUserDashboardBalances(userId);
-
-  const recentExpenses = await db.expense.findMany({
-    where: {
-      deletedAt: null,
-      group: { members: { some: { userId } } },
-    },
-    include: {
-      paidBy: { select: { name: true } },
-      group: { select: { name: true } },
-    },
-    orderBy: { createdAt: "desc" },
-    take: 5,
-  });
+  const { friends, pendingIncoming, pendingOutgoing, totalOwed, totalOwing } =
+    await getFriendsDashboardData();
 
   return (
     <div className="space-y-12">
       <PageHeader
         eyebrow="Overview"
         title="Dashboard"
-        description="A clear read on your shared expenses."
+        description="Balances and friends, all in one place."
       >
         <Button
           nativeButton={false}
@@ -65,100 +57,115 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <section className="space-y-4">
-        <div className="flex items-baseline justify-between">
-          <h2 className="font-heading text-xl font-medium tracking-tight">
-            Groups
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Find friends</CardTitle>
+          <CardDescription>
+            Search for registered users by name or email.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <FriendSearch onSearch={searchUsersAction} />
+        </CardContent>
+      </Card>
+
+      {pendingIncoming.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
+            Incoming requests
           </h2>
-          <Link
-            href="/groups"
-            className="font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground transition-colors hover:text-foreground"
-          >
-            All groups
-          </Link>
-        </div>
-        {groupSummaries.length === 0 ? (
+          <ul className="overflow-hidden rounded-lg border border-border">
+            {pendingIncoming.map((req) => (
+              <li
+                key={req.id}
+                className="flex flex-col gap-3 border-b border-border p-5 last:border-0 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div className="min-w-0">
+                  <p className="font-medium">{req.requester.name}</p>
+                  <p className="truncate text-sm text-muted-foreground">
+                    {req.requester.email}
+                  </p>
+                </div>
+                <FriendRequestActions friendshipId={req.id} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {pendingOutgoing.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
+            Sent requests
+          </h2>
+          <ul className="overflow-hidden rounded-lg border border-border">
+            {pendingOutgoing.map((req) => (
+              <li
+                key={req.id}
+                className="flex items-center justify-between border-b border-border p-5 last:border-0"
+              >
+                <p className="font-medium">{req.addressee.name}</p>
+                <span className="font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground">
+                  Pending
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <section className="space-y-4">
+        <h2 className="font-heading text-xl font-medium tracking-tight">
+          Your friends
+        </h2>
+        {friends.length === 0 ? (
           <div className="rounded-lg border border-dashed border-border py-12 text-center text-sm text-muted-foreground">
-            No groups yet.{" "}
-            <Link
-              href="/groups"
-              className="font-medium text-foreground underline underline-offset-4"
-            >
-              Create or join a group
-            </Link>
+            No friends yet. Search above to add someone.
           </div>
         ) : (
           <ul className="overflow-hidden rounded-lg border border-border">
-            {groupSummaries.map((g) => (
-              <li key={g.groupId} className="border-b border-border last:border-0">
+            {friends.map((friend) => (
+              <li
+                key={friend.id}
+                className="flex flex-col gap-3 border-b border-border p-5 last:border-0 sm:flex-row sm:items-center sm:justify-between"
+              >
                 <Link
-                  href={`/groups/${g.groupId}`}
-                  className="flex items-center justify-between gap-3 px-5 py-4 transition-colors hover:bg-muted/40"
+                  href={`/friends/${friend.id}`}
+                  className="min-w-0 transition-colors hover:text-foreground"
                 >
-                  <span className="min-w-0 truncate font-medium">
-                    {g.groupName}
-                  </span>
+                  <p className="font-medium">{friend.name}</p>
+                  <p className="truncate text-sm text-muted-foreground">
+                    {friend.email}
+                  </p>
+                </Link>
+                <div className="flex items-center justify-between gap-3 sm:justify-end">
                   <Badge
                     className="shrink-0 font-mono"
                     variant={
-                      g.balance > 0.01
+                      friend.balance > 0.01
                         ? "positive"
-                        : g.balance < -0.01
+                        : friend.balance < -0.01
                           ? "negative"
                           : "secondary"
                     }
                   >
-                    {g.balance > 0.01
-                      ? `owed ${formatCurrency(g.balance)}`
-                      : g.balance < -0.01
-                        ? `owe ${formatCurrency(Math.abs(g.balance))}`
+                    {friend.balance > 0.01
+                      ? `owes you ${formatCurrency(friend.balance)}`
+                      : friend.balance < -0.01
+                        ? `you owe ${formatCurrency(Math.abs(friend.balance))}`
                         : "settled up"}
                   </Badge>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      <section className="space-y-4">
-        <div className="flex items-baseline justify-between">
-          <h2 className="font-heading text-xl font-medium tracking-tight">
-            Recent activity
-          </h2>
-          <Link
-            href="/activity"
-            className="font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground transition-colors hover:text-foreground"
-          >
-            View all
-          </Link>
-        </div>
-        {recentExpenses.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-border py-12 text-center text-sm text-muted-foreground">
-            No expenses yet.
-          </div>
-        ) : (
-          <ul className="overflow-hidden rounded-lg border border-border">
-            {recentExpenses.map((expense) => (
-              <li key={expense.id} className="border-b border-border last:border-0">
-                <Link
-                  href={`/expenses/${expense.id}`}
-                  className="group flex items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-muted/40"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate font-medium">{expense.description}</p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
-                      {expense.group.name} · {expense.paidBy.name} ·{" "}
-                      {format(expense.expenseDate, "MMM d, yyyy")}
-                    </p>
-                  </div>
-                  <span className="flex shrink-0 items-center gap-2">
-                    <span className="tabular font-mono text-sm font-medium">
-                      {formatCurrency(decimalToNumber(expense.amount))}
-                    </span>
-                    <ArrowUpRight className="size-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
-                  </span>
-                </Link>
+                  <Button
+                    nativeButton={false}
+                    variant="outline"
+                    size="sm"
+                    className="shrink-0"
+                    render={<Link href={`/expenses/new?with=${friend.id}`} />}
+                  >
+                    <Receipt className="size-4" />
+                    Split expense
+                  </Button>
+                </div>
               </li>
             ))}
           </ul>

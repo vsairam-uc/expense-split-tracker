@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Activity,
-  Users,
   UsersRound,
   UserCircle,
   LogOut,
@@ -13,12 +12,12 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/logo";
 import { logoutAction } from "@/lib/actions/auth";
 
 const baseNavItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/activity", label: "Activity", icon: Activity },
-  { href: "/friends", label: "Friends", icon: Users },
   { href: "/groups", label: "Groups", icon: UsersRound },
   { href: "/profile", label: "Profile", icon: UserCircle },
 ];
@@ -41,13 +40,10 @@ export function AppNav({
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-4 sm:gap-4">
           <Link
             href="/"
-            className="flex shrink-0 items-baseline gap-2 font-heading text-lg font-medium tracking-tight"
+            className="flex shrink-0 items-center gap-2 font-heading text-lg font-medium tracking-tight"
           >
-            <span
-              className="size-1.5 translate-y-[-2px] rounded-full bg-foreground"
-              aria-hidden
-            />
-            SplitExpense
+            <Logo className="size-6" />
+            Vasool
           </Link>
 
           <nav

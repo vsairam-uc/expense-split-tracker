@@ -137,6 +137,38 @@ export function simplifyDebts(
   return result;
 }
 
+export function computePairwiseBalance(
+  userId: string,
+  otherId: string,
+  expenses: ExpenseRecord[],
+  settlements: SettlementRecord[] = [],
+): number {
+  let balance = 0;
+
+  for (const expense of expenses) {
+    if (expense.paidById === userId) {
+      const otherSplit = expense.splits.find((s) => s.userId === otherId);
+      if (otherSplit) balance += otherSplit.amount;
+    } else if (expense.paidById === otherId) {
+      const userSplit = expense.splits.find((s) => s.userId === userId);
+      if (userSplit) balance -= userSplit.amount;
+    }
+  }
+
+  for (const settlement of settlements) {
+    if (settlement.fromUserId === otherId && settlement.toUserId === userId) {
+      balance -= settlement.amount;
+    } else if (
+      settlement.fromUserId === userId &&
+      settlement.toUserId === otherId
+    ) {
+      balance += settlement.amount;
+    }
+  }
+
+  return balance;
+}
+
 export function getBalanceBetween(
   fromUserId: string,
   toUserId: string,

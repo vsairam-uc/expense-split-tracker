@@ -1,13 +1,5 @@
 import Link from "next/link";
-import {
-  ArrowRight,
-  HandCoins,
-  PieChart,
-  Scale,
-  Users,
-  UsersRound,
-  Wallet,
-} from "lucide-react";
+import { ArrowRight, HandCoins, PieChart, Scale, UsersRound } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LandingNav } from "@/components/landing-nav";
@@ -37,16 +29,6 @@ const features: {
     title: "Settle up",
     description: "Record payments and balances update automatically.",
   },
-  {
-    icon: Users,
-    title: "Friends",
-    description: "Connect and invite people into new groups easily.",
-  },
-  {
-    icon: Wallet,
-    title: "Expense history",
-    description: "Full split breakdown on every expense, anytime.",
-  },
 ];
 
 const steps = [
@@ -72,12 +54,12 @@ export function LandingPage({
             className="paper-grain pointer-events-none absolute inset-0 opacity-50"
             aria-hidden
           />
-          <div className="relative mx-auto grid max-w-5xl gap-12 px-5 pb-20 pt-16 sm:px-8 sm:pb-28 sm:pt-24 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+          <div className="relative mx-auto grid max-w-5xl gap-10 px-5 pb-14 pt-12 sm:gap-12 sm:px-8 sm:pb-28 sm:pt-24 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             <div>
               <p className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">
                 Shared expenses, settled
               </p>
-              <h1 className="mt-6 font-heading text-5xl font-medium leading-[1.05] tracking-tight sm:text-6xl">
+              <h1 className="mt-6 font-heading text-4xl font-medium leading-[1.05] tracking-tight sm:text-6xl">
                 Split bills fairly.
                 <span className="block italic text-muted-foreground">
                   Stay even with everyone.
@@ -87,7 +69,7 @@ export function LandingPage({
                 Track who paid what, split your way, and read clear balances like
                 a ledger — no spreadsheets, no awkward math.
               </p>
-              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+              <div className="mt-8 flex flex-col items-start gap-4 sm:mt-9">
                 {isAuthenticated ? (
                   <>
                     <Button
@@ -99,15 +81,12 @@ export function LandingPage({
                       Go to dashboard
                       <ArrowRight className="size-4" />
                     </Button>
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      nativeButton={false}
-                      className="w-full sm:w-auto"
-                      render={<Link href="/profile" />}
+                    <Link
+                      href="/profile"
+                      className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
                     >
-                      Profile
-                    </Button>
+                      View your profile
+                    </Link>
                   </>
                 ) : (
                   <>
@@ -120,15 +99,15 @@ export function LandingPage({
                       Get started free
                       <ArrowRight className="size-4" />
                     </Button>
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      nativeButton={false}
-                      className="w-full sm:w-auto"
-                      render={<Link href="/login" />}
-                    >
-                      Sign in
-                    </Button>
+                    <p className="text-sm text-muted-foreground">
+                      Already have an account?{" "}
+                      <Link
+                        href="/login"
+                        className="text-foreground underline-offset-4 hover:underline"
+                      >
+                        Sign in
+                      </Link>
+                    </p>
                   </>
                 )}
               </div>
@@ -185,7 +164,7 @@ export function LandingPage({
           id="features"
           className="scroll-mt-20 border-t border-border"
         >
-          <div className="mx-auto max-w-5xl px-5 py-16 sm:px-8 sm:py-24">
+          <div className="mx-auto max-w-5xl px-5 py-12 sm:px-8 sm:py-24">
             <div className="flex items-end justify-between gap-6">
               <h2 className="font-heading text-3xl font-medium tracking-tight sm:text-4xl">
                 Built for real-life splitting
@@ -195,7 +174,7 @@ export function LandingPage({
               </span>
             </div>
 
-            <ul className="mt-12 grid border-l border-t border-border sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="mt-10 grid border-l border-t border-border sm:mt-12 sm:grid-cols-2">
               {features.map(({ icon: Icon, title, description }) => (
                 <li
                   key={title}
@@ -219,7 +198,7 @@ export function LandingPage({
           id="how-it-works"
           className="scroll-mt-20 border-t border-border bg-muted/30"
         >
-          <div className="mx-auto max-w-5xl px-5 py-16 sm:px-8 sm:py-24">
+          <div className="mx-auto max-w-5xl px-5 py-12 sm:px-8 sm:py-24">
             <div className="flex items-end justify-between gap-6">
               <h2 className="font-heading text-3xl font-medium tracking-tight sm:text-4xl">
                 How it works
@@ -250,61 +229,12 @@ export function LandingPage({
             </ol>
           </div>
         </section>
-
-        {/* CTA */}
-        <section
-          id="get-started"
-          className="scroll-mt-20 border-t border-border"
-        >
-          <div className="mx-auto max-w-5xl px-5 py-20 text-center sm:px-8 sm:py-28">
-            <h2 className="mx-auto max-w-2xl font-heading text-4xl font-medium leading-tight tracking-tight sm:text-5xl">
-              Ready for your next shared bill?
-            </h2>
-            <p className="mt-4 text-sm text-muted-foreground sm:text-base">
-              Free account · split breakdowns on every expense · always settled.
-            </p>
-            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-              {isAuthenticated ? (
-                <Button
-                  size="lg"
-                  nativeButton={false}
-                  className="w-full sm:w-auto"
-                  render={<Link href="/dashboard" />}
-                >
-                  Open dashboard
-                  <ArrowRight className="size-4" />
-                </Button>
-              ) : (
-                <>
-                  <Button
-                    size="lg"
-                    nativeButton={false}
-                    className="w-full sm:w-auto"
-                    render={<Link href="/register" />}
-                  >
-                    Create account
-                    <ArrowRight className="size-4" />
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    nativeButton={false}
-                    className="w-full sm:w-auto"
-                    render={<Link href="/login" />}
-                  >
-                    Sign in
-                  </Button>
-                </>
-              )}
-            </div>
-          </div>
-        </section>
       </main>
 
       <footer className="border-t border-border">
         <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-3 px-5 py-8 text-sm text-muted-foreground sm:flex-row sm:px-8">
           <p className="font-mono text-xs uppercase tracking-[0.15em]">
-            © {new Date().getFullYear()} SplitExpense
+            © {new Date().getFullYear()} Vasool
           </p>
           <nav className="flex flex-wrap justify-center gap-6">
             <a href="#features" className="transition-colors hover:text-foreground">

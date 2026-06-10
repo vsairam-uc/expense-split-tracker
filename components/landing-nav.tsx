@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { LayoutDashboard, UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/logo";
 
 const sectionLinks = [
   { href: "#features", label: "Features" },
   { href: "#how-it-works", label: "How it works" },
-  { href: "#get-started", label: "Get started" },
 ];
 
 export function LandingNav({
@@ -21,13 +21,10 @@ export function LandingNav({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Link
             href="/"
-            className="flex shrink-0 items-baseline gap-2 font-heading text-lg font-medium tracking-tight"
+            className="flex shrink-0 items-center gap-2 font-heading text-lg font-medium tracking-tight"
           >
-            <span
-              className="size-1.5 translate-y-[-2px] rounded-full bg-foreground"
-              aria-hidden
-            />
-            SplitExpense
+            <Logo className="size-6" />
+            Vasool
           </Link>
 
           <nav
@@ -74,7 +71,7 @@ export function LandingNav({
                   nativeButton={false}
                   variant="ghost"
                   size="sm"
-                  className="text-muted-foreground"
+                  className="hidden text-muted-foreground sm:inline-flex"
                   render={<Link href="/login" />}
                 >
                   Sign in

@@ -22,8 +22,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SplitExpense — Track shared expenses",
-  description: "Split and track expenses with friends and groups",
+  title: "Vasool — Split bills & settle up",
+  description:
+    "Split bills, track balances, and collect what you're owed — with friends and groups.",
 };
 
 export const viewport = {

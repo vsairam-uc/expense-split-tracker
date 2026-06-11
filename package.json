@@ -13,6 +13,8 @@
     "db:up": "bash scripts/db-up.sh",
     "db:down": "bash scripts/db-down.sh",
     "db:migrate": "prisma migrate deploy",
+    "load-test-data": "tsx scripts/seed-test-data.ts",
+    "clear-db": "tsx scripts/cleanup-test-data.ts",
     "make-admin": "tsx scripts/make-admin.ts"
   },
   "dependencies": {

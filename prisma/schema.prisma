@@ -52,6 +52,7 @@ model User {
   expenseSplits          ExpenseSplit[]
   settlementsFrom        Settlement[]  @relation("SettlementFrom")
   settlementsTo          Settlement[]  @relation("SettlementTo")
+  notifications          Notification[]
 }
 
 model Friendship {
@@ -148,4 +149,19 @@ model Settlement {
   toUser   User  @relation("SettlementTo", fields: [toUserId], references: [id], onDelete: Cascade)
 
   @@index([groupId, settledAt])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  url       String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
 }

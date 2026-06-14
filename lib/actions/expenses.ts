@@ -9,7 +9,8 @@ import {
 } from "@/lib/balances";
 import { expenseSchema, friendExpenseSchema, settlementSchema } from "@/lib/validations/expense";
 import { findOrCreateGroupForParticipants } from "@/lib/find-or-create-group";
-import { decimalToNumber, getAcceptedFriendIds, requireGroupMember, requireUser } from "@/lib/session";
+import { decimalToNumber, getAcceptedFriendIds, requireGroupMember, requireUser, formatCurrency } from "@/lib/session";
+import { createNotification } from "@/lib/notifications";
 import type { ActionState } from "@/lib/actions/auth";
 
 function parseExactSplits(formData: FormData, participantIds: string[]) {
@@ -92,6 +93,23 @@ export async function createExpenseAction(
       },
     },
   });
+
+  const payer = await db.user.findUnique({
+    where: { id: paidById },
+    select: { name: true },
+  });
+  const paidByName = payer?.name ?? "Someone";
+
+  await Promise.all(
+    splits
+      .filter((s) => s.userId !== paidById)
+      .map((s) => {
+        const formattedAmount = formatCurrency(s.amount);
+        const title = "New Split Added";
+        const message = `${paidByName} added an expense for "${parsed.data.description}". Your share is ${formattedAmount}.`;
+        return createNotification(s.userId, title, message, `/expenses/${expense.id}`);
+      }),
+  );
 
   revalidatePath(`/groups/${groupId}`);
   redirect(`/expenses/${expense.id}`);
@@ -192,6 +210,23 @@ export async function createFriendExpenseAction(
       },
     },
   });
+
+  const payer = await db.user.findUnique({
+    where: { id: paidById },
+    select: { name: true },
+  });
+  const paidByName = payer?.name ?? "Someone";
+
+  await Promise.all(
+    splits
+      .filter((s) => s.userId !== paidById)
+      .map((s) => {
+        const formattedAmount = formatCurrency(s.amount);
+        const title = "New Split Added";
+        const message = `${paidByName} added an expense for "${parsed.data.description}". Your share is ${formattedAmount}.`;
+        return createNotification(s.userId, title, message, `/expenses/${expense.id}`);
+      }),
+  );
 
   revalidatePath("/dashboard");
   revalidatePath("/groups");

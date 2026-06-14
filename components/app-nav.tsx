@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { NotificationBell } from "@/components/notification-bell";
 import { logoutAction } from "@/lib/actions/auth";
 
 const baseNavItems = [
@@ -75,6 +76,7 @@ export function AppNav({
             <span className="hidden max-w-[140px] truncate text-sm text-muted-foreground lg:inline">
               {userName}
             </span>
+            <NotificationBell />
             <ThemeToggle className="text-muted-foreground" />
             <form action={logoutAction}>
               <Button

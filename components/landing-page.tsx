@@ -1,8 +1,12 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 import { ArrowRight, HandCoins, PieChart, Scale, UsersRound } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LandingNav } from "@/components/landing-nav";
+import { cn } from "@/lib/utils";
 
 const features: {
   icon: LucideIcon;
@@ -43,6 +47,50 @@ export function LandingPage({
 }: {
   isAuthenticated?: boolean;
 }) {
+  const [demoAmount, setDemoAmount] = useState("120.00");
+  const [demoPayer, setDemoPayer] = useState<"You" | "Ana" | "Marco">("You");
+  const [demoParticipants, setDemoParticipants] = useState<string[]>(["You", "Ana", "Marco"]);
+
+  const amountNum = Number(demoAmount) || 0;
+  const participantCount = demoParticipants.length;
+  
+  const members = [
+    { key: "Ana", name: "Ana" },
+    { key: "You", name: "You" },
+    { key: "Marco", name: "Marco" },
+  ];
+  
+  const spentShare = participantCount > 0 ? amountNum / participantCount : 0;
+  
+  const balances = members.map(m => {
+    const isParticipant = demoParticipants.includes(m.key);
+    const paid = demoPayer === m.key ? amountNum : 0;
+    const spent = isParticipant ? spentShare : 0;
+    const balance = paid - spent;
+    return { ...m, paid, spent, balance };
+  });
+
+  // Calculate settlement path
+  const settlements: string[] = [];
+  const debtors = balances.filter(b => b.balance < -0.01).map(b => ({ ...b, balance: Math.abs(b.balance) }));
+  const creditors = balances.filter(b => b.balance > 0.01).map(b => ({ ...b, balance: b.balance }));
+
+  let dIdx = 0;
+  let cIdx = 0;
+  while (dIdx < debtors.length && cIdx < creditors.length) {
+    const debtor = debtors[dIdx];
+    const creditor = creditors[cIdx];
+    const amountToClear = Math.min(debtor.balance, creditor.balance);
+    
+    settlements.push(`${debtor.name} owes ${creditor.name}: €${amountToClear.toFixed(2)}`);
+    
+    debtor.balance -= amountToClear;
+    creditor.balance -= amountToClear;
+    
+    if (debtor.balance < 0.01) dIdx++;
+    if (creditor.balance < 0.01) cIdx++;
+  }
+
   return (
     <div className="flex min-h-full flex-col bg-background text-foreground">
       <LandingNav isAuthenticated={isAuthenticated} />
@@ -75,7 +123,7 @@ export function LandingPage({
                     <Button
                       size="lg"
                       nativeButton={false}
-                      className="w-full sm:w-auto"
+                      className="w-full sm:w-auto cursor-pointer"
                       render={<Link href="/dashboard" />}
                     >
                       Go to dashboard
@@ -93,7 +141,7 @@ export function LandingPage({
                     <Button
                       size="lg"
                       nativeButton={false}
-                      className="w-full sm:w-auto"
+                      className="w-full sm:w-auto cursor-pointer"
                       render={<Link href="/register" />}
                     >
                       Get started free
@@ -113,46 +161,132 @@ export function LandingPage({
               </div>
             </div>
 
-            {/* Ledger receipt motif */}
+            {/* Interactive Sandbox Receipt Motif */}
             <div className="relative mx-auto w-full max-w-sm">
-              <div className="rounded-lg border border-border bg-card p-6 shadow-[0_1px_0_var(--border)]">
-                <div className="flex items-baseline justify-between border-b border-dashed border-border pb-4">
-                  <span className="font-heading text-lg font-medium tracking-tight">
-                    Lisbon trip
-                  </span>
-                  <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                    4 people
-                  </span>
+              <div className="rounded-lg border border-border bg-card p-6 shadow-xs glass-card">
+                <div className="flex flex-col gap-4 border-b border-dashed border-border pb-4">
+                  <div className="flex items-center justify-between">
+                    <span className="font-heading text-lg font-medium tracking-tight">
+                      Lisbon trip
+                    </span>
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground font-semibold px-2 py-0.5 border border-border/80 rounded bg-background/50">
+                      Sandbox
+                    </span>
+                  </div>
+                  
+                  {/* Sandbox Controls */}
+                  <div className="grid grid-cols-2 gap-3 text-xs">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-muted-foreground font-medium uppercase tracking-wider text-[9px]">Amount (€)</span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="1"
+                        value={demoAmount}
+                        onChange={(e) => setDemoAmount(e.target.value)}
+                        className="rounded-md border border-border bg-background/60 px-2 py-1 font-mono text-sm focus:outline-hidden focus:ring-1 focus:ring-primary text-foreground"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-muted-foreground font-medium uppercase tracking-wider text-[9px]">Paid By</span>
+                      <select
+                        value={demoPayer}
+                        onChange={(e) => setDemoPayer(e.target.value as any)}
+                        className="rounded-md border border-border bg-background/60 px-2 py-1.5 text-xs focus:outline-hidden focus:ring-1 focus:ring-primary text-foreground"
+                      >
+                        <option value="You">You</option>
+                        <option value="Ana">Ana</option>
+                        <option value="Marco">Marco</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
-                <ul className="divide-y divide-border text-sm">
-                  {[
-                    { name: "Dinner at Time Out", who: "Ana paid", amt: "€84.00" },
-                    { name: "Tram passes", who: "You paid", amt: "€26.00" },
-                    { name: "Pastéis de Belém", who: "Marco paid", amt: "€12.40" },
-                  ].map((row) => (
+
+                <div className="mt-4">
+                  <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold font-mono">Participants</span>
+                  <div className="mt-1 flex gap-2">
+                    {members.map(m => {
+                      const isChecked = demoParticipants.includes(m.key);
+                      return (
+                        <button
+                          key={m.key}
+                          onClick={() => {
+                            setDemoParticipants(prev =>
+                              prev.includes(m.key) ? prev.filter(p => p !== m.key) : [...prev, m.key]
+                            );
+                          }}
+                          className={cn(
+                            "flex-1 py-1 px-1.5 text-xs rounded-md border text-center transition-all cursor-pointer",
+                            isChecked
+                              ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-500 text-emerald-800 dark:text-emerald-300 font-medium"
+                              : "bg-background/40 border-border text-muted-foreground hover:bg-muted/30"
+                          )}
+                        >
+                          {m.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <ul className="divide-y divide-border text-sm mt-4">
+                  {balances.map((row) => (
                     <li
-                      key={row.name}
-                      className="flex items-center justify-between py-3"
+                      key={row.key}
+                      className="flex items-center justify-between py-2.5"
                     >
                       <div className="min-w-0">
                         <p className="truncate font-medium">{row.name}</p>
-                        <p className="text-xs text-muted-foreground">{row.who}</p>
+                        <p className="text-[10px] text-muted-foreground font-mono">
+                          Paid: €{row.paid.toFixed(2)} · Spent: €{row.spent.toFixed(2)}
+                        </p>
                       </div>
-                      <span className="tabular font-mono text-sm">{row.amt}</span>
+                      <span
+                        className={cn(
+                          "tabular font-mono text-sm font-medium",
+                          row.balance > 0.01
+                            ? "text-positive"
+                            : row.balance < -0.01
+                              ? "text-negative"
+                              : "text-muted-foreground"
+                        )}
+                      >
+                        {row.balance > 0.01 ? "+" : ""}
+                        €{row.balance.toFixed(2)}
+                      </span>
                     </li>
                   ))}
                 </ul>
-                <div className="mt-4 flex items-center justify-between border-t border-dashed border-border pt-4">
-                  <span className="text-sm text-muted-foreground">
-                    Your balance
-                  </span>
-                  <span className="tabular font-mono text-base font-medium text-positive">
-                    + €30.60
-                  </span>
+                
+                <div className="mt-4 border-t border-dashed border-border pt-4 space-y-2">
+                  <div className="flex items-center justify-between text-sm font-medium">
+                    <span className="text-muted-foreground">Total Spent</span>
+                    <span className="font-mono">€{amountNum.toFixed(2)}</span>
+                  </div>
+                  
+                  {settlements.length > 0 ? (
+                    <div className="rounded-md bg-muted/40 p-2 text-xs text-muted-foreground space-y-1 font-mono">
+                      {settlements.map((s, idx) => (
+                        <div key={idx} className="flex justify-between">
+                          <span>{s}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-2.5 text-xs text-muted-foreground font-mono">
+                      Everyone is settled up
+                    </div>
+                  )}
                 </div>
               </div>
+              
+              {/* Stacked sheets of paper layout */}
               <div
-                className="absolute -right-3 -top-3 -z-10 size-full rounded-lg border border-border"
+                className="absolute -right-2 -bottom-2 -z-10 size-full rounded-lg border border-border bg-card/60"
+                aria-hidden
+              />
+              <div
+                className="absolute -right-4 -bottom-4 -z-20 size-full rounded-lg border border-border/60 bg-card/30"
                 aria-hidden
               />
             </div>

@@ -51,7 +51,7 @@ export function LandingNav({
                   nativeButton={false}
                   variant="ghost"
                   size="sm"
-                  className="gap-1.5 text-muted-foreground"
+                  className="gap-1.5 text-muted-foreground cursor-pointer"
                   render={<Link href="/dashboard" />}
                 >
                   <LayoutDashboard className="size-4" />
@@ -60,7 +60,7 @@ export function LandingNav({
                 <Button
                   nativeButton={false}
                   size="sm"
-                  className="gap-1.5"
+                  className="gap-1.5 cursor-pointer"
                   render={<Link href="/profile" />}
                 >
                   <UserCircle className="size-4" />
@@ -73,7 +73,7 @@ export function LandingNav({
                   nativeButton={false}
                   variant="ghost"
                   size="sm"
-                  className="hidden text-muted-foreground sm:inline-flex"
+                  className="hidden text-muted-foreground sm:inline-flex cursor-pointer"
                   render={<Link href="/login" />}
                 >
                   Sign in
@@ -81,6 +81,7 @@ export function LandingNav({
                 <Button
                   nativeButton={false}
                   size="sm"
+                  className="cursor-pointer"
                   render={<Link href="/register" />}
                 >
                   Get started

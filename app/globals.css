@@ -159,3 +159,25 @@
     );
   background-size: 22px 22px;
 }
+
+/* Glassmorphism styling for cards */
+@utility glass-card {
+  background-color: color-mix(in oklch, var(--card) 85%, transparent);
+  backdrop-filter: blur(12px) saturate(120%);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px 0 color-mix(in oklch, var(--foreground) 4%, transparent);
+}
+
+.dark .glass-card {
+  background-color: color-mix(in oklch, var(--card) 75%, transparent);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Custom shadow for floating navigation */
+@utility floating-nav-shadow {
+  box-shadow: 0 10px 30px -10px color-mix(in oklch, var(--foreground) 15%, transparent);
+}
+
+.dark .floating-nav-shadow {
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+}

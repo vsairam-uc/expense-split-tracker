@@ -9,6 +9,7 @@ import {
   UserCircle,
   LogOut,
   Shield,
+  Plus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,34 @@ export function AppNav({
   const navItems = isAdmin
     ? [...baseNavItems, { href: "/admin", label: "Admin", icon: Shield }]
     : baseNavItems;
+
+  const leftItems = navItems.filter(
+    (item) => item.href === "/dashboard" || item.href === "/groups"
+  );
+  const rightItems = navItems.filter(
+    (item) =>
+      item.href === "/activity" ||
+      item.href === "/profile" ||
+      item.href === "/admin"
+  );
+
+  const renderNavItem = (item: typeof baseNavItems[0]) => {
+    const active = pathname.startsWith(item.href);
+    const Icon = item.icon;
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        className={cn(
+          "flex min-w-0 flex-1 flex-col items-center gap-0.5 py-1 text-[10px] transition-colors sm:text-xs",
+          active ? "text-foreground font-medium" : "text-muted-foreground"
+        )}
+      >
+        <Icon className="size-5 shrink-0" />
+        <span className="truncate">{item.label}</span>
+      </Link>
+    );
+  };
 
   return (
     <>
@@ -94,28 +123,28 @@ export function AppNav({
       </header>
 
       <nav
-        className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/90 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
+        className="fixed bottom-4 left-4 right-4 z-40 mx-auto flex max-w-md items-center justify-between rounded-full border border-border bg-background/80 px-2 py-1.5 backdrop-blur-md floating-nav-shadow md:hidden"
         aria-label="Main navigation"
       >
-        <div className="mx-auto flex max-w-6xl justify-around px-1 py-1.5">
-          {navItems.map(({ href, label, icon: Icon }) => {
-            const active = pathname.startsWith(href);
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={cn(
-                  "flex min-w-0 flex-1 flex-col items-center gap-1 px-1 py-1.5 text-[10px] transition-colors sm:text-xs",
-                  active ? "text-foreground" : "text-muted-foreground",
-                )}
-              >
-                <Icon className="size-5 shrink-0" />
-                <span className="truncate">{label}</span>
-              </Link>
-            );
-          })}
+        <div className="flex flex-1 justify-around">
+          {leftItems.map(renderNavItem)}
+        </div>
+
+        <div className="flex shrink-0 px-2">
+          <Link
+            href="/expenses/new"
+            className="flex size-11 -translate-y-4 items-center justify-center rounded-full bg-emerald-600 text-white shadow-md transition-all hover:scale-105 active:scale-95 hover:bg-emerald-500 dark:bg-emerald-500 dark:hover:bg-emerald-400"
+            aria-label="Add expense"
+          >
+            <Plus className="size-6" />
+          </Link>
+        </div>
+
+        <div className="flex flex-1 justify-around">
+          {rightItems.map(renderNavItem)}
         </div>
       </nav>
     </>
   );
 }
+

@@ -16,6 +16,7 @@ import {
   searchUsersAction,
 } from "@/lib/actions/friends";
 import { formatCurrency } from "@/lib/session";
+import { cn } from "@/lib/utils";
 
 export default async function DashboardPage() {
   const { friends, pendingIncoming, pendingOutgoing, totalOwed, totalOwing } =
@@ -38,24 +39,69 @@ export default async function DashboardPage() {
         </Button>
       </PageHeader>
 
-      <div className="grid grid-cols-1 divide-y divide-border overflow-hidden rounded-lg border border-border sm:grid-cols-2 sm:divide-x sm:divide-y-0">
-        <div className="p-6">
-          <p className="font-mono text-[0.7rem] uppercase tracking-[0.18em] text-muted-foreground">
-            You are owed
-          </p>
-          <p className="tabular mt-3 font-mono text-3xl font-medium text-positive sm:text-4xl">
-            {formatCurrency(totalOwed)}
-          </p>
-        </div>
-        <div className="p-6">
-          <p className="font-mono text-[0.7rem] uppercase tracking-[0.18em] text-muted-foreground">
-            You owe
-          </p>
-          <p className="tabular mt-3 font-mono text-3xl font-medium text-negative sm:text-4xl">
-            {formatCurrency(totalOwing)}
-          </p>
-        </div>
-      </div>
+      {(() => {
+        const netBalance = totalOwed - totalOwing;
+        const total = totalOwed + totalOwing;
+        const owedPercent = total > 0 ? (totalOwed / total) * 100 : 50;
+        const owingPercent = total > 0 ? (totalOwing / total) * 100 : 50;
+        
+        return (
+          <div className="glass-card rounded-2xl p-6 sm:p-8 space-y-6">
+            <div>
+              <p className="font-mono text-[0.7rem] uppercase tracking-[0.18em] text-muted-foreground">
+                Net Balance
+              </p>
+              <p
+                className={cn(
+                  "tabular mt-2 font-mono text-4xl font-semibold sm:text-5xl tracking-tight",
+                  netBalance > 0.01
+                    ? "text-positive"
+                    : netBalance < -0.01
+                      ? "text-negative"
+                      : "text-muted-foreground"
+                )}
+              >
+                {netBalance > 0.01 ? "+" : netBalance < -0.01 ? "-" : ""}
+                {formatCurrency(Math.abs(netBalance))}
+              </p>
+            </div>
+
+            {total > 0 ? (
+              <div className="space-y-1.5">
+                <div className="h-2 w-full bg-border rounded-full overflow-hidden flex">
+                  <div className="bg-positive h-full transition-all duration-500" style={{ width: `${owedPercent}%` }} />
+                  <div className="bg-negative h-full transition-all duration-500" style={{ width: `${owingPercent}%` }} />
+                </div>
+                <div className="flex justify-between text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
+                  <span>{owedPercent.toFixed(0)}% Owed</span>
+                  <span>{owingPercent.toFixed(0)}% Owing</span>
+                </div>
+              </div>
+            ) : (
+              <div className="h-1.5 w-full bg-border/40 rounded-full" />
+            )}
+
+            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border/60">
+              <div>
+                <p className="font-mono text-[0.65rem] uppercase tracking-[0.18em] text-muted-foreground">
+                  You are owed
+                </p>
+                <p className="tabular mt-1.5 font-mono text-xl font-medium text-positive">
+                  {formatCurrency(totalOwed)}
+                </p>
+              </div>
+              <div className="border-l border-border/60 pl-4">
+                <p className="font-mono text-[0.65rem] uppercase tracking-[0.18em] text-muted-foreground">
+                  You owe
+                </p>
+                <p className="tabular mt-1.5 font-mono text-xl font-medium text-negative">
+                  {formatCurrency(totalOwing)}
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       <Card>
         <CardHeader>
